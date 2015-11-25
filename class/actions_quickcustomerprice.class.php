@@ -61,14 +61,21 @@ class Actionsquickcustomerprice
 	 */
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
-		if (in_array('propalcard', explode(':', $parameters['context'])))
+		$error = 0;
+		
+		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
 		{
+			
+			if($object->statut > 0) return 0;
+			
 		  
 		  	?>
 		  	<script type="text/javascript">
 		  		$(document).ready(function() {
 			  		$('table#tablelines tr[id]').find('td.linecoluht,td.linecoldiscount,td.linecolqty').each(function(i,item) {
 			  			value = $(item).html();
+			  			if(value=='&nbsp;')value='';
+			  			
 			  			lineid = $(item).closest('tr').attr('id').substr(4);
 			  			
 			  			if($(item).hasClass('linecoldiscount')) {
@@ -81,7 +88,7 @@ class Actionsquickcustomerprice
 			  				col = 'price';
 			  			}
 			  			
-			  			$a = $('<a class="blue" />');
+			  			$a = $('<a class="blue" style="text-decoration:underline;cursor:text;" />');
 			  			$a.attr('href', "javascript:;");
 			  			$a.attr('value', value);
 			  			$a.attr('col', col);
@@ -89,9 +96,11 @@ class Actionsquickcustomerprice
 			  			$a.attr('objectid', '<?php echo $object->id; ?>');
 			  			$a.attr('objectelement', '<?php echo $object->element; ?>');
 			  			
-			  			if(value == '' || value=='&nbsp;') $(item).html('...');
+			  			//if(value == '' || value=='&nbsp;') $(item).html('...');
 			  			
 			  			$(item).wrapInner($a);
+			  			
+			  			$(item).attr('align','right');
 			  			
 			  			$(item).append('<input type="text" class="flat qcp" name="qcp-price" style="display:none;" size="8" />');
 			  			
@@ -140,13 +149,13 @@ class Actionsquickcustomerprice
 			  						}
 			  						,dataType:'json'
 			  					}).done(function(data) {
-			  						
+			  							
 			  						$('tr[id=row-'+lineid+'] td.liencolht').html(data.total_ht);
-			  						$('tr[id=row-'+lineid+'] td.linecoldiscount a').html(data.remise+'%');
+			  						$('tr[id=row-'+lineid+'] td.linecoldiscount a').html(data.remise_percent+'%');
 			  						$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
 			  						$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
 			  						
-			  						$link.html(data[col]);
+			  						$link.attr('value',data[col]);
 			  						
 			  					});
 			  					
@@ -168,13 +177,10 @@ class Actionsquickcustomerprice
 
 		if (! $error)
 		{
-			$this->results = array('myreturn' => $myvalue);
-			$this->resprints = 'A text to show';
 			return 0; // or return 1 to replace standard code
 		}
 		else
 		{
-			$this->errors[] = 'Error message';
 			return -1;
 		}
 	}

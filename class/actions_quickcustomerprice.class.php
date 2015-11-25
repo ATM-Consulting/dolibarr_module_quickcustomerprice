@@ -72,6 +72,56 @@ class Actionsquickcustomerprice
 		  	?>
 		  	<script type="text/javascript">
 		  		$(document).ready(function() {
+		  			
+		  			<?php
+		  			
+		  			if( (float)DOL_VERSION<3.9 ) {
+		  				
+						?>
+						var nb_col= $('table#tablelines tr.liste_titre').first().find('label[for=price_ht]').closest('td').prevAll('td').length ;
+						if(nb_col>0) {
+							$('table#tablelines tr[id]').each(function(i,item) {
+								$(item).find('td').eq(nb_col).addClass('linecoluht');
+							});
+						}
+						
+						var nb_col= $('table#tablelines tr.liste_titre').first().find('label[for=qty]').closest('td').prevAll('td').length ;
+						if(nb_col>0) {
+							$('table#tablelines tr[id]').each(function(i,item) {
+								$(item).find('td').eq(nb_col).addClass('linecolqty');
+							});
+						}
+						
+						var nb_col= $('table#tablelines tr.liste_titre').first().find('label[for=remise_percent]').closest('td').prevAll('td').length ;
+						if(nb_col>0) {
+							$('table#tablelines tr[id]').each(function(i,item) {
+								$(item).find('td').eq(nb_col).addClass('linecoldiscount');
+							});
+						
+							
+							<?php
+								$moreColForTotal = 1;
+							
+								if (! empty($conf->margin->enabled) && empty($user->societe_id)) $moreColForTotal++; 
+								if (! empty($conf->global->DISPLAY_MARGIN_RATES) && $user->rights->margins->liretous) $moreColForTotal++;
+								if (! empty($conf->global->DISPLAY_MARK_RATES) && $user->rights->margins->liretous) $moreColForTotal++;
+							
+							?>
+							if(nb_col>0) {
+								$('table#tablelines tr[id]').each(function(i,item) {
+									$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('liencolht');
+								});
+							}
+						}	
+						<?php
+						
+						
+		  			}	
+		  		
+		  			
+		  			?>
+		  			
+		  			
 			  		$('table#tablelines tr[id]').find('td.linecoluht,td.linecoldiscount,td.linecolqty').each(function(i,item) {
 			  			value = $(item).html();
 			  			if(value=='&nbsp;')value='';

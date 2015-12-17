@@ -62,13 +62,13 @@ class Actionsquickcustomerprice
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
 		$error = 0;
-		
+//var_dump($parameters['currentcontext']);		
 		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
 		{
 			
 			if($object->statut > 0) return 0;
 			
-		  
+		  	global $langs;
 		  	?>
 		  	<script type="text/javascript">
 		  		$(document).ready(function() {
@@ -78,21 +78,21 @@ class Actionsquickcustomerprice
 		  			if( (float)DOL_VERSION<3.9 ) {
 		  				
 						?>
-						var nb_col= $('table#tablelines tr.liste_titre').first().find('label[for=price_ht]').closest('td').prevAll('td').length ;
+						var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('PriceUHT') ?>)').prevAll('td').length ;
 						if(nb_col>0) {
 							$('table#tablelines tr[id]').each(function(i,item) {
 								$(item).find('td').eq(nb_col).addClass('linecoluht');
 							});
 						}
 						
-						var nb_col= $('table#tablelines tr.liste_titre').first().find('label[for=qty]').closest('td').prevAll('td').length ;
+						var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('Qty') ?>)').prevAll('td').length ;
 						if(nb_col>0) {
 							$('table#tablelines tr[id]').each(function(i,item) {
 								$(item).find('td').eq(nb_col).addClass('linecolqty');
 							});
 						}
 						
-						var nb_col= $('table#tablelines tr.liste_titre').first().find('label[for=remise_percent]').closest('td').prevAll('td').length ;
+						var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('ReductionShort') ?>)').prevAll('td').length ;
 						if(nb_col>0) {
 							$('table#tablelines tr[id]').each(function(i,item) {
 								$(item).find('td').eq(nb_col).addClass('linecoldiscount');

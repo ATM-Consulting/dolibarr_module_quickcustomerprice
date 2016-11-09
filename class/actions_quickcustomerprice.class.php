@@ -203,8 +203,11 @@ class Actionsquickcustomerprice
 			  						$('tr[id=row-'+lineid+'] td.liencolht').html(data.total_ht);
 			  						$('tr[id=row-'+lineid+'] td.linecoldiscount a').html(data.remise_percent+'%');
 			  						$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
-			  						$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
-			  						
+			  						$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);									
+									<?php if( (float)DOL_VERSION>3.8 ) { ?>
+			  						  $('tr[id=row-'+lineid+'] td.linecoluttc').html(data.uttc);
+									<?php } ?>
+									
 			  						$link.attr('value',data[col]);
 			  						
 			  					});

@@ -45,17 +45,20 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 					, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $line->pa_ht, $line->label, $line->special_code
 					, $line->array_options,$line->situation_percent, $line->fk_unit);
 			$total_ht = $o->line->total_ht;
+			$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 		}
 		else if($objectelement == 'commande') {
 			$res = $o->updateline( $lineid, $line->desc , $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx,$line->localtax2_tx, 'HT', $line->info_bits
 					, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $line->pa_ht, $line->label, $line->special_code
 					, $line->array_options, $line->fk_unit);
 			$total_ht = $o->line->total_ht;
+			$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 		}
 		else {
 			$res = $o->updateline( $lineid , $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code
 					, $line->fk_parent_line, 0, $line->fk_fournprice , $line->pa_ht, $line->label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit  );
 			$total_ht = $o->line->total_ht;
+			$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			
 		}
 		
@@ -66,6 +69,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 		        ,'qty'=>$qty
 		        ,'price'=>price($price)
 		        ,'remise_percent'=>$remise_percent
+		        ,'uttc'=>$uttc
 			);
 			
 			

@@ -108,13 +108,13 @@ print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 // Example with a yes / no select
 $var=!$var;
 print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("ParamLabel").'</td>';
+print '<td>'.$langs->trans("QCP_ALLOW_CHANGE_ON_VALIDATE").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_CONSTNAME">';
-print $form->selectyesno("CONSTNAME",$conf->global->CONSTNAME,1);
+print '<input type="hidden" name="action" value="set_QCP_ALLOW_CHANGE_ON_VALIDATE">';
+print $form->selectyesno("QCP_ALLOW_CHANGE_ON_VALIDATE",$conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE,1);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';

@@ -65,10 +65,10 @@ class Actionsquickcustomerprice
 //var_dump($parameters['currentcontext']);		
 		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
 		{
+			global $langs, $conf;
+			 
+			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) return 0;
 			
-			if($object->statut > 0) return 0;
-			
-		  	global $langs;
 		  	?>
 		  	<script type="text/javascript">
 		  		$(document).ready(function() {

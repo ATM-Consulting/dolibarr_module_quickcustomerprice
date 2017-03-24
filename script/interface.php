@@ -27,6 +27,10 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 	$o=new $objectelement($db);
 	$o->fetch($objectid);
 	
+	if(!empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) {
+		$o->brouillon=1;		
+	}
+	
 	$find=false;
 	foreach($o->lines as &$line) {
 		if($line->id == $lineid || $line->rowid == $lineid) {

@@ -5,3 +5,5 @@ ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.
 
 quickcustomerpriceSetup = Configuration du module quickcustomerprice
 quickcustomerpriceAbout = A propos du module quickcustomerprice
+
+QCP_ALLOW_CHANGE_ON_VALIDATE=Autoriser la modification d'élément validé

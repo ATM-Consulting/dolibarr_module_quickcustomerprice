@@ -68,7 +68,9 @@ class Actionsquickcustomerprice
 			global $langs, $conf;
 			 
 			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) return 0;
-			
+
+			$TIDLinesToChange = $this->_getTIDLinesToChange($object);
+
 		  	?>
 		  	<script type="text/javascript">
 		  		$(document).ready(function() {
@@ -120,13 +122,15 @@ class Actionsquickcustomerprice
 		  		
 		  			
 		  			?>
-		  			
+					var TIDLinesToChange = <?php echo json_encode($TIDLinesToChange); ?>;
 		  			
 			  		$('table#tablelines tr[id]').find('td.linecoluht,td.linecoldiscount,td.linecolqty').each(function(i,item) {
 			  			value = $(item).html();
 			  			if(value=='&nbsp;')value='';
 			  			
 			  			lineid = $(item).closest('tr').attr('id').substr(4);
+
+						if(TIDLinesToChange.indexOf(lineid) == -1) return;
 			  			
 			  			if($(item).hasClass('linecoldiscount')) {
 			  				col='remise_percent';
@@ -201,7 +205,7 @@ class Actionsquickcustomerprice
 			  					}).done(function(data) {
 			  							
 			  						$('tr[id=row-'+lineid+'] td.liencolht').html(data.total_ht);
-			  						$('tr[id=row-'+lineid+'] td.linecoldiscount a').html(data.remise_percent+'%');
+			  						$('tr[id=row-'+lineid+'] td.linecoldiscount a').html((data.remise_percent == 0 || data.remise_percent == '') ? '&nbsp;' : data.remise_percent+'%');
 			  						$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
 			  						$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
 									<?php if( (float)DOL_VERSION>3.8 ) { ?>
@@ -235,5 +239,19 @@ class Actionsquickcustomerprice
 		{
 			return -1;
 		}
+	}
+
+	private function _getTIDLinesToChange($object) {
+		$TRes = array();
+
+		if(! empty($object->lines)) {
+			foreach($object->lines AS $line) {
+				if(($line->info_bits & 2) != 2) { // On empêche l'édition des lignes issues d'avoirs et de d'acomptes
+					$TRes[] = $line->id;
+				}
+			}
+		}
+
+		return $TRes;
 	}
 }

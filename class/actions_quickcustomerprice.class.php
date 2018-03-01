@@ -70,7 +70,6 @@ class Actionsquickcustomerprice
 			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) return 0;
 
 			$TIDLinesToChange = $this->_getTIDLinesToChange($object);
-
 		  	?>
 		  	<script type="text/javascript">
 		  		$(document).ready(function() {
@@ -247,13 +246,17 @@ class Actionsquickcustomerprice
 
 	private function _getTIDLinesToChange($object) {
 		$TRes = array();
-
+		
 		if(! empty($object->lines)) {
 			foreach($object->lines AS $line) {
 				if(($line->info_bits & 2) != 2) { // On empêche l'édition des lignes issues d'avoirs et de d'acomptes
 					$TRes[] = $line->id;
 				}
 			}
+		}
+			
+		if($object->element == 'propal' && !empty($object->line)){ // New propal line
+			$TRes[] = strval($object->line->id);
 		}
 
 		return $TRes;

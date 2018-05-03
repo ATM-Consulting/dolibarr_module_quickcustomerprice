@@ -62,6 +62,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
 				{
+					$langs->load('products');
 					$res = -1;
 					$o->error = $langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
 					$error ++;
@@ -93,6 +94,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
 				{
+					$langs->load('products');
 					$res = -1;
 					$o->error = $langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
 					$error ++;
@@ -124,6 +126,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
 				{
+					$langs->load('products');
 					$res = -1;
 					$o->error =$langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
 					$error ++;

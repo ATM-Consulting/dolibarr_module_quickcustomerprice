@@ -205,17 +205,19 @@ class Actionsquickcustomerprice
 			  						}
 			  						,dataType:'json'
 			  					}).done(function(data) {
-			  							
-			  						$('tr[id=row-'+lineid+'] td.liencolht').html(data.total_ht);
-			  						$('tr[id=row-'+lineid+'] td.linecoldiscount a').html((data.remise_percent == 0 || data.remise_percent == '') ? '&nbsp;' : data.remise_percent+'%');
-			  						$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
-			  						$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
-			  						$('tr[id=row-'+lineid+'] td.linecolcycleref a').html(data.situation_cycle_ref+'%');
-									<?php if( (float)DOL_VERSION>3.8 ) { ?>
-									  $('tr[id=row-'+lineid+'] td.linecoluttc').html(data.uttc);
-									<?php } ?>				  						
-			  						$link.attr('value',data[col]);
-			  						
+			  						if(data.error == null){
+										$('tr[id=row-'+lineid+'] td.liencolht').html(data.total_ht);
+										$('tr[id=row-'+lineid+'] td.linecoldiscount a').html((data.remise_percent == 0 || data.remise_percent == '') ? '&nbsp;' : data.remise_percent+'%');
+										$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
+										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
+										$('tr[id=row-'+lineid+'] td.linecolcycleref a').html(data.situation_cycle_ref+'%');
+										<?php if( (float)DOL_VERSION>3.8 ) { ?>
+										  $('tr[id=row-'+lineid+'] td.linecoluttc').html(data.uttc);
+										<?php } ?>				  						
+										$link.attr('value',data[col]);
+									}else if (data.error == 'updateFailed'){
+										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.msg);
+									}
 			  					});
 			  					
 			  					

@@ -60,7 +60,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if (empty($user->rights->produit->ignore_price_min) && ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min))))
+				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) ) && ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min))))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -92,7 +92,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if (empty($user->rights->produit->ignore_price_min) && ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min))))
+				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) )&& ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min))))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -124,7 +124,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if (empty($user->rights->produit->ignore_price_min) && ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min))))
+				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) )&& ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min))))
 				{
 					$langs->load('products');
 					$res = -1;

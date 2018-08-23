@@ -174,9 +174,27 @@ class modquickcustomerprice extends DolibarrModules
 		$this->rights = array();		// Permission array used by this module
 		$r=0;
 
+         $this->rights[$r][0] = $this->numero.$r;
+		 $this->rights[$r][1] = 'Edition rapide du prix unitaire';
+		 $this->rights[$r][3] = 0;
+		 $this->rights[$r][4] = 'edit_unit_price';
+		 $r++;
+
+         $this->rights[$r][0] = $this->numero.$r;
+		 $this->rights[$r][1] = 'Edition rapide de la quantité';
+		 $this->rights[$r][3] = 0;
+		 $this->rights[$r][4] = 'edit_quantity';
+		 $r++;
+
+         $this->rights[$r][0] = $this->numero.$r;
+		 $this->rights[$r][1] = 'Edition rapide de la réduction';
+		 $this->rights[$r][3] = 0;
+		 $this->rights[$r][4] = 'edit_discount';
+		 $r++;
+
 		// Add here list of permission defined by an id, a label, a boolean and two constant strings.
 		// Example:
-		// $this->rights[$r][0] = $this->numero + $r;	// Permission id (must not be already used)
+		// $this->rights[$r][0] = $this->numero.$r;	// Permission id (must not be already used)
 		// $this->rights[$r][1] = 'Permision label';	// Permission label
 		// $this->rights[$r][3] = 1; 					// Permission by default for new user (0/1)
 		// $this->rights[$r][4] = 'level1';				// In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)

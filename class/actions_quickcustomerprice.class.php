@@ -61,6 +61,8 @@ class Actionsquickcustomerprice
 	 */
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
+        global $user;
+
 		$error = 0;
 //var_dump($parameters['currentcontext']);		
 		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
@@ -110,7 +112,7 @@ class Actionsquickcustomerprice
 							?>
 							if(nb_col>0) {
 								$('table#tablelines tr[id]').each(function(i,item) {
-									$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('liencolht');
+									$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('linecolht');
 								});
 							}
 						}	
@@ -122,8 +124,13 @@ class Actionsquickcustomerprice
 		  			
 		  			?>
 					var TIDLinesToChange = <?php echo json_encode($TIDLinesToChange); ?>;
-		  			
-			  		$('table#tablelines tr[id]').find('td.linecoluht,td.linecoldiscount,td.linecolqty,td.linecolcycleref').each(function(i,item) {
+		  			<?php
+                        $strToFind = array();
+                        if(! empty($user->rights->quickcustomerprice->edit_unit_price)) $strToFind[] = 'td.linecoluht';
+                        if(! empty($user->rights->quickcustomerprice->edit_quantity)) $strToFind[] = 'td.linecolqty';
+                        if(! empty($user->rights->quickcustomerprice->edit_discount)) $strToFind[] = 'td.linecoldiscount';
+                    ?>
+			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {
 			  			value = $(item).html();
 			  			if(value=='&nbsp;')value='';
 			  			

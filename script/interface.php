@@ -19,7 +19,7 @@
 	
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	global $db,$conf, $langs;
-	
+	$error=0;
 	${$column} = price2num($value);
 	
 	$Tab = array();
@@ -45,28 +45,101 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		if(is_null($remise_percent))$remise_percent = $line->remise_percent;
 		if(is_null($situation_cycle_ref))$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
 
-		if($objectelement == 'facture') {
-			$res = $o->updateline( $lineid, $line->desc , $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx,$line->localtax2_tx
+		if ($objectelement == 'facture')
+		{
+			if (!empty($line->fk_product))
+			{
+				$product = new Product($db);
+				$res = $product->fetch($line->fk_product);
+
+				$type = $product->type;
+
+				$price_min = $product->price_min;
+				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($object->thirdparty->price_level))
+					$price_min = $product->multiprices_min [$object->thirdparty->price_level];
+
+				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
+
+				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
+				{
+					$langs->load('products');
+					$res = -1;
+					$o->error = $langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
+					$error ++;
+				}
+			}
+			if (empty($error))
+			{
+				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx
 					, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $line->pa_ht, $line->label, $line->special_code
-					, $line->array_options,$situation_cycle_ref, $line->fk_unit);
-			$total_ht = $o->line->total_ht;
-			$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
+					, $line->array_options, $situation_cycle_ref, $line->fk_unit);
+				$total_ht = $o->line->total_ht;
+				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
+			}
 		}
-		else if($objectelement == 'commande') {
-			$res = $o->updateline( $lineid, $line->desc , $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx,$line->localtax2_tx, 'HT', $line->info_bits
+		else if ($objectelement == 'commande')
+		{
+			if (!empty($line->fk_product))
+			{
+				$product = new Product($db);
+				$res = $product->fetch($line->fk_product);
+
+				$type = $product->type;
+
+				$price_min = $product->price_min;
+				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($object->thirdparty->price_level))
+					$price_min = $product->multiprices_min [$object->thirdparty->price_level];
+
+				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
+
+				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
+				{
+					$langs->load('products');
+					$res = -1;
+					$o->error = $langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
+					$error ++;
+				}
+			}
+			if (empty($error))
+			{
+				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits
 					, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $line->pa_ht, $line->label, $line->special_code
 					, $line->array_options, $line->fk_unit);
-			$total_ht = $o->line->total_ht;
-			$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
+				$total_ht = $o->line->total_ht;
+				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
+			}
 		}
-		else { // Propal
-			$res = $o->updateline( $lineid , $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code
-					, $line->fk_parent_line, 0, $line->fk_fournprice , $line->pa_ht, $line->label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit  );
-			$total_ht = $o->line->total_ht;
-			$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
-			
+		else
+		{ // Propal
+			if (!empty($line->fk_product))
+			{
+				$product = new Product($db);
+				$res = $product->fetch($line->fk_product);
+
+				$type = $product->type;
+
+				$price_min = $product->price_min;
+				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($object->thirdparty->price_level))
+					$price_min = $product->multiprices_min [$object->thirdparty->price_level];
+
+				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
+
+				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
+				{
+					$langs->load('products');
+					$res = -1;
+					$o->error =$langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
+					$error ++;
+				}
+			}
+			if(empty($error)){
+				$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code
+					, $line->fk_parent_line, 0, $line->fk_fournprice, $line->pa_ht, $line->label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+				$total_ht = $o->line->total_ht;
+				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
+			}
 		}
-		
+
 		if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
 		{
 			$hidedetails = (GETPOST('hidedetails', 'int') ? GETPOST('hidedetails', 'int') : (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0));

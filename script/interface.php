@@ -20,7 +20,8 @@
 function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 	global $db,$conf, $langs;
 	$error=0;
-	${$column} = price2num($value);
+	if($column == 'remise_percent') ${$column} = price2num(floatval($value));
+	else ${$column} = price2num($value);
 	
 	$Tab = array();
 	
@@ -60,7 +61,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
+				if ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min)))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -92,7 +93,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
+				if ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min)))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -124,7 +125,7 @@ function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
+				if ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min)))
 				{
 					$langs->load('products');
 					$res = -1;

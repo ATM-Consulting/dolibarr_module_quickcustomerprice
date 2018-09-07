@@ -10,14 +10,14 @@
 	switch ($put) {
 		case 'price':
 			
-			$Tab = _updateLine(GETPOST('objectid'),GETPOST('objectelement'),GETPOST('lineid'),GETPOST('column'), GETPOST('value'));
+			$Tab = _updateObjectLine(GETPOST('objectid'),GETPOST('objectelement'),GETPOST('lineid'),GETPOST('column'), GETPOST('value'));
 					
 			__out($Tab, 'json');	
 			break;
 		
 	}
 	
-function _updateLine($objectid, $objectelement,$lineid,$column, $value) {
+function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	global $db,$conf, $langs;
 	$error=0;
 	if($column == 'remise_percent') ${$column} = price2num(floatval($value));

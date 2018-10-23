@@ -68,8 +68,8 @@ class Actionsquickcustomerprice
 		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
 		{
 			global $langs, $conf;
-			 
-			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) return 0;
+			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)
+			|| ($object->element === 'facture' && $object->type == Facture::TYPE_SITUATION && (!empty($object->tab_previous_situation_invoice) || !empty($object->tab_next_situation_invoice)))) return 0;
 
 			$TIDLinesToChange = $this->_getTIDLinesToChange($object);
 		  	?>

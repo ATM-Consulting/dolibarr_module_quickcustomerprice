@@ -12,7 +12,7 @@
 			
 			$Tab = _updateObjectLine(GETPOST('objectid'),GETPOST('objectelement'),GETPOST('lineid'),GETPOST('column'), GETPOST('value'));
 					
-			__out($Tab, 'json');	
+			echo json_encode($Tab);	
 			break;
 		
 	}

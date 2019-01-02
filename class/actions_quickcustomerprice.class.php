@@ -68,6 +68,11 @@ class Actionsquickcustomerprice
 		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
 		{
 			global $langs, $conf;
+
+			dol_include_once('/compta/facture/class/facture.class.php');
+			dol_include_once('/comm/propal/class/propal.class.php');
+			dol_include_once('/commande/class/commande.class.php');
+
 			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) return 0;
 
 			$TIDLinesToChange = $this->_getTIDLinesToChange($object);

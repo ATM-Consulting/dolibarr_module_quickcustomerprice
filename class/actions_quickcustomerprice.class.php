@@ -61,13 +61,15 @@ class Actionsquickcustomerprice
 	 */
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
+        global $user;
+
 		$error = 0;
 //var_dump($parameters['currentcontext']);		
 		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
 		{
 			global $langs, $conf;
-			 
-			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) return 0;
+			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)
+			|| ($object->element === 'facture' && $object->type == Facture::TYPE_SITUATION && (!empty($object->tab_previous_situation_invoice) || !empty($object->tab_next_situation_invoice)))) return 0;
 
 			$TIDLinesToChange = $this->_getTIDLinesToChange($object);
 		  	?>
@@ -110,7 +112,7 @@ class Actionsquickcustomerprice
 							?>
 							if(nb_col>0) {
 								$('table#tablelines tr[id]').each(function(i,item) {
-									$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('liencolht');
+									$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('linecolht');
 								});
 							}
 						}	
@@ -122,8 +124,13 @@ class Actionsquickcustomerprice
 		  			
 		  			?>
 					var TIDLinesToChange = <?php echo json_encode($TIDLinesToChange); ?>;
-		  			
-			  		$('table#tablelines tr[id]').find('td.linecoluht,td.linecoldiscount,td.linecolqty,td.linecolcycleref').each(function(i,item) {
+		  			<?php
+                        $strToFind = array();
+                        if(! empty($user->rights->quickcustomerprice->edit_unit_price)) $strToFind[] = 'td.linecoluht';
+                        if(! empty($user->rights->quickcustomerprice->edit_quantity)) $strToFind[] = 'td.linecolqty';
+                        if(! empty($user->rights->quickcustomerprice->edit_discount)) $strToFind[] = 'td.linecoldiscount';
+                    ?>
+			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {
 			  			value = $(item).html();
 			  			if(value=='&nbsp;')value='';
 			  			
@@ -206,7 +213,7 @@ class Actionsquickcustomerprice
 			  						,dataType:'json'
 			  					}).done(function(data) {
 			  						if(data.error == null){
-										$('tr[id=row-'+lineid+'] td.liencolht').html(data.total_ht);
+										$('tr[id=row-'+lineid+'] td.linecolht').html(data.total_ht);
 										$('tr[id=row-'+lineid+'] td.linecoldiscount a').html((data.remise_percent == 0 || data.remise_percent == '') ? '&nbsp;' : data.remise_percent+'%');
 										$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
 										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);

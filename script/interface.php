@@ -18,7 +18,7 @@
 	}
 	
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
-	global $db,$conf, $langs;
+	global $db,$conf, $langs, $user;
 	$error=0;
 	if($column == 'remise_percent') ${$column} = price2num(floatval($value));
 	else ${$column} = price2num($value);
@@ -61,7 +61,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min)))
+				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) ) && ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min))))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -93,7 +93,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min)))
+				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) )&& ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min))))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -125,7 +125,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
-				if ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min)))
+				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) )&& ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min))))
 				{
 					$langs->load('products');
 					$res = -1;

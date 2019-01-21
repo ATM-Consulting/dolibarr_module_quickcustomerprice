@@ -132,12 +132,16 @@ class Actionsquickcustomerprice
                         $strToFind = array();
 
                         // Pour les facture de situations, on peut modifier le P.U. HT et les Qtes uniquement s'il n'y a qu'une situation dans le cycle
-                        if(! empty($user->rights->quickcustomerprice->edit_unit_price) && $object->type == Facture::TYPE_SITUATION && empty($object->tab_previous_situation_invoice) && empty($object->tab_next_situation_invoice)) {
+                        if(! empty($user->rights->quickcustomerprice->edit_unit_price) && $object->element != 'facture'
+                            || ! empty($user->rights->quickcustomerprice->edit_unit_price) && $object->element == 'facture' && $object->type != Facture::TYPE_SITUATION
+                            || ! empty($user->rights->quickcustomerprice->edit_unit_price) && $object->element == 'facture' && $object->type == Facture::TYPE_SITUATION && empty($object->tab_previous_situation_invoice) && empty($object->tab_next_situation_invoice)) {
                             $strToFind[] = 'td.linecoluht';
                         }
 
                         // Pour les facture de situations, on peut modifier le P.U. HT et les Qtes uniquement s'il n'y a qu'une situation dans le cycle
-                        if(! empty($user->rights->quickcustomerprice->edit_quantity) && $object->type == Facture::TYPE_SITUATION && empty($object->tab_previous_situation_invoice) && empty($object->tab_next_situation_invoice)) {
+                        if(! empty($user->rights->quickcustomerprice->edit_quantity) && $object->element != 'facture'
+                            || ! empty($user->rights->quickcustomerprice->edit_quantity) && $object->element == 'facture' && $object->type != Facture::TYPE_SITUATION
+                            || ! empty($user->rights->quickcustomerprice->edit_quantity) && $object->element == 'facture' && $object->type == Facture::TYPE_SITUATION && empty($object->tab_previous_situation_invoice) && empty($object->tab_next_situation_invoice)) {
                             $strToFind[] = 'td.linecolqty';
                         }
                         if(! empty($user->rights->quickcustomerprice->edit_discount)) $strToFind[] = 'td.linecoldiscount';

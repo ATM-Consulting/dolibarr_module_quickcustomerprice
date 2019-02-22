@@ -18,7 +18,7 @@
 	}
 	
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
-	global $db,$conf, $langs;
+	global $db,$conf, $langs, $hookmanager;
 	$error=0;
 	${$column} = price2num($value);
 	
@@ -43,6 +43,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		if(is_null($qty))$qty = $line->qty;
 		if(is_null($price))$price = $line->subprice;
 		if(is_null($remise_percent))$remise_percent = $line->remise_percent;
+		if(empty($remise_percent)) $remise_percent = 0;
 		if(is_null($situation_cycle_ref))$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
 
 		if ($objectelement == 'facture')
@@ -154,6 +155,11 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			}
 			
 			$ret = $o->fetch($o->id); // Reload to get new records
+            $hookname = '';
+            if($o->element == 'commande') $hookname = 'ordercard';
+            if($o->element == 'propal') $hookname = 'propalcard';
+            if($o->element == 'facture') $hookname = 'invoicecard';
+            $hookmanager->initHooks(array($hookname, 'globalcard'));
 			$o->generateDocument($o->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 		}
 		

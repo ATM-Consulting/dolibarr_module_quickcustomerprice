@@ -69,7 +69,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			}
 			if (empty($error))
 			{
-                if($remise_percent == 'Offert') $remise_percent = 100;
+                if($remise_percent === 'Offert') $remise_percent = 100;
                 if(strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
 
 				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx

@@ -65,7 +65,7 @@ class Actionsquickcustomerprice
 
 		$error = 0;
 //var_dump($parameters['currentcontext']);		
-		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
+		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard' || $parameters['currentcontext'] == 'ordersuppliercard' || $parameters['currentcontext'] == 'invoicesuppliercard')
 		{
 			global $langs, $conf;
 

@@ -4,7 +4,9 @@
 	dol_include_once('/comm/propal/class/propal.class.php');
 	dol_include_once('/compta/facture/class/facture.class.php');
 	dol_include_once('/commande/class/commande.class.php');
-	
+	dol_include_once('/fourn/class/fournisseur.commande.class.php');
+	dol_include_once('/fourn/class/fournisseur.facture.class.php');
+
 	$put = GETPOST('put');
 	
 	switch ($put) {
@@ -23,6 +25,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	${$column} = price2num($value);
 	
 	$Tab = array();
+	if ($objectelement == "order_supplier") $objectelement = "CommandeFournisseur";
+	if ($objectelement == "invoice_supplier") $objectelement = "FactureFournisseur";
 	
 	$o=new $objectelement($db);
 	$o->fetch($objectid);
@@ -109,7 +113,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
 		}
-		else
+		else if ($objectelement == "propal")
 		{ // Propal
 			if (!empty($line->fk_product))
 			{
@@ -137,6 +141,21 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
 		}
+		else if ($objectelement == "CommandeFournisseur")
+        {
+            $res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, 0, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $line->multicurrency_subprice, $line->ref_supplier);
+            $total_ht = $o->line->total_ht;
+            $uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
+        }
+		elseif ($objectelement == "FactureFournisseur")
+        {
+            $res = $o->updateline($lineid, $line->desc, $price, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $qty, $line->fk_product, 'HT', $line->info_bits, $line->product_type, $remise_percent, false, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $line->multicurrency_subprice, $line->ref_supplier);
+            $line = new SupplierInvoiceLine($db);
+            $line->fetch($lineid);
+
+            $total_ht = $line->total_ht;
+            $uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
+        }
 
 		if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
 		{

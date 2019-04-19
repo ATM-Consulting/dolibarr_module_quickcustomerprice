@@ -6,6 +6,7 @@
 	dol_include_once('/commande/class/commande.class.php');
 	dol_include_once('/fourn/class/fournisseur.commande.class.php');
 	dol_include_once('/fourn/class/fournisseur.facture.class.php');
+	dol_include_once('/supplier_proposal/class/supplier_proposal.class.php');
 
 	$put = GETPOST('put');
 	
@@ -27,6 +28,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	$Tab = array();
 	if ($objectelement == "order_supplier") $objectelement = "CommandeFournisseur";
 	if ($objectelement == "invoice_supplier") $objectelement = "FactureFournisseur";
+	if ($objectelement == "supplier_proposal") $objectelement = "SupplierProposal";
 	
 	$o=new $objectelement($db);
 	$o->fetch($objectid);
@@ -151,6 +153,15 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
         {
             $res = $o->updateline($lineid, $line->desc, $price, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $qty, $line->fk_product, 'HT', $line->info_bits, $line->product_type, $remise_percent, false, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $line->multicurrency_subprice, $line->ref_supplier);
             $line = new SupplierInvoiceLine($db);
+            $line->fetch($lineid);
+
+            $total_ht = $line->total_ht;
+            $uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
+        }
+		elseif ($objectelement == "SupplierProposal")
+        {
+            $res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc);
+            $line = new SupplierProposalLine($db);
             $line->fetch($lineid);
 
             $total_ht = $line->total_ht;

@@ -89,7 +89,7 @@ class modquickcustomerprice extends DolibarrModules
 		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@quickcustomerprice')) // Set here all workflow context managed by module
 		//                        );
 		$this->module_parts = array(
-			'hooks'=>array('propalcard','invoicecard','ordercard', 'ordersuppliercard', 'invoicesuppliercard')
+			'hooks'=>array('propalcard','invoicecard','ordercard', 'ordersuppliercard', 'invoicesuppliercard', 'supplier_proposalcard')
 		);
 
 		// Data directories to create when module is enabled.

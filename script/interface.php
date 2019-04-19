@@ -7,7 +7,7 @@
 	dol_include_once('/fourn/class/fournisseur.commande.class.php');
 	dol_include_once('/fourn/class/fournisseur.facture.class.php');
 	dol_include_once('/supplier_proposal/class/supplier_proposal.class.php');
-
+	
 	$put = GETPOST('put');
 	
 	switch ($put) {
@@ -21,9 +21,10 @@
 	}
 	
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
-	global $db,$conf, $langs, $hookmanager;
+	global $db,$conf, $langs, $user, $hookmanager;
 	$error=0;
-	${$column} = price2num($value);
+	if($column == 'remise_percent') ${$column} = price2num(floatval($value));
+	else ${$column} = price2num($value);
 	
 	$Tab = array();
 	if ($objectelement == "order_supplier") $objectelement = "CommandeFournisseur";
@@ -65,7 +66,9 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
 					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
 
-				if ($price_min && (price2num($price) * (1 - price2num($remise_percent) / 100) < price2num($price_min)))
+				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
+
+				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -98,7 +101,9 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
 					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
 
-				if ($price_min && (price2num($price) * (1 - price2num($remise_percent) / 100) < price2num($price_min)))
+				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
+
+				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -125,10 +130,12 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				$type = $product->type;
 
 				$price_min = $product->price_min;
-				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
-					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
+				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($object->thirdparty->price_level))
+					$price_min = $product->multiprices_min [$object->thirdparty->price_level];
 
-				if ($price_min && (price2num($price) * (1 - price2num($remise_percent) / 100) < price2num($price_min)))
+				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
+
+				if ($price_min && (price2num($price) * (1 - price2num(GETPOST('remise_percent')) / 100) < price2num($price_min)))
 				{
 					$langs->load('products');
 					$res = -1;
@@ -185,11 +192,6 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			}
 			
 			$ret = $o->fetch($o->id); // Reload to get new records
-            $hookname = '';
-            if($o->element == 'commande') $hookname = 'ordercard';
-            if($o->element == 'propal') $hookname = 'propalcard';
-            if($o->element == 'facture') $hookname = 'invoicecard';
-            $hookmanager->initHooks(array($hookname, 'globalcard'));
 			$o->generateDocument($o->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 		}
 		

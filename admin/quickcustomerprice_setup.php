@@ -31,6 +31,7 @@ if (! $res) {
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once '../lib/quickcustomerprice.lib.php';
+dol_include_once('/abricot/includes/lib/admin.lib.php');
 
 // Translations
 $langs->load("quickcustomerprice@quickcustomerprice");
@@ -91,7 +92,7 @@ dol_fiche_head(
     $head,
     'settings',
     $langs->trans("Module104874Name"),
-    0,
+    1,
     "quickcustomerprice@quickcustomerprice"
 );
 
@@ -118,6 +119,8 @@ print $form->selectyesno("QCP_ALLOW_CHANGE_ON_VALIDATE",$conf->global->QCP_ALLOW
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';
+
+setup_print_on_off('QCP_ENABLE_SUPPLIER_PART');
 
 print '</table>';
 

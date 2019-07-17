@@ -61,13 +61,23 @@ class Actionsquickcustomerprice
 	 */
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
-        global $user;
+        global $user, $conf;
 
 		$error = 0;
 //var_dump($parameters['currentcontext']);		
-		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard' || $parameters['currentcontext'] == 'ordersuppliercard' || $parameters['currentcontext'] == 'invoicesuppliercard' || $parameters['currentcontext'] == 'supplier_proposalcard')
+		if (
+			$parameters['currentcontext'] == 'propalcard'
+			|| $parameters['currentcontext'] == 'ordercard'
+			|| $parameters['currentcontext'] == 'invoicecard'
+			|| (!empty ($conf->global->QCP_ENABLE_SUPPLIER_PART) && (
+				$parameters['currentcontext'] == 'ordersuppliercard'
+				|| $parameters['currentcontext'] == 'invoicesuppliercard'
+				|| $parameters['currentcontext'] == 'supplier_proposalcard'
+				)
+			)
+		)
 		{
-			global $langs, $conf;
+			global $langs;
 
 			dol_include_once('/compta/facture/class/facture.class.php');
 			dol_include_once('/comm/propal/class/propal.class.php');

@@ -68,8 +68,12 @@ class Actionsquickcustomerprice
 		if ($parameters['currentcontext'] == 'propalcard' || $parameters['currentcontext'] == 'ordercard' || $parameters['currentcontext'] == 'invoicecard')
 		{
 			global $langs, $conf;
-			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)
-			|| ($object->element === 'facture' && $object->type == Facture::TYPE_SITUATION && (!empty($object->tab_previous_situation_invoice) || !empty($object->tab_next_situation_invoice)))) return 0;
+
+			dol_include_once('/compta/facture/class/facture.class.php');
+			dol_include_once('/comm/propal/class/propal.class.php');
+			dol_include_once('/commande/class/commande.class.php');
+
+			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) return 0;
 
 			$TIDLinesToChange = $this->_getTIDLinesToChange($object);
 		  	?>
@@ -126,8 +130,20 @@ class Actionsquickcustomerprice
 					var TIDLinesToChange = <?php echo json_encode($TIDLinesToChange); ?>;
 		  			<?php
                         $strToFind = array();
-                        if(! empty($user->rights->quickcustomerprice->edit_unit_price)) $strToFind[] = 'td.linecoluht';
-                        if(! empty($user->rights->quickcustomerprice->edit_quantity)) $strToFind[] = 'td.linecolqty';
+
+                        // Pour les facture de situations, on peut modifier le P.U. HT et les Qtes uniquement s'il n'y a qu'une situation dans le cycle
+                        if(! empty($user->rights->quickcustomerprice->edit_unit_price) && $object->element != 'facture'
+                            || ! empty($user->rights->quickcustomerprice->edit_unit_price) && $object->element == 'facture' && $object->type != Facture::TYPE_SITUATION
+                            || ! empty($user->rights->quickcustomerprice->edit_unit_price) && $object->element == 'facture' && $object->type == Facture::TYPE_SITUATION && empty($object->tab_previous_situation_invoice) && empty($object->tab_next_situation_invoice)) {
+                            $strToFind[] = 'td.linecoluht';
+                        }
+
+                        // Pour les facture de situations, on peut modifier le P.U. HT et les Qtes uniquement s'il n'y a qu'une situation dans le cycle
+                        if(! empty($user->rights->quickcustomerprice->edit_quantity) && $object->element != 'facture'
+                            || ! empty($user->rights->quickcustomerprice->edit_quantity) && $object->element == 'facture' && $object->type != Facture::TYPE_SITUATION
+                            || ! empty($user->rights->quickcustomerprice->edit_quantity) && $object->element == 'facture' && $object->type == Facture::TYPE_SITUATION && empty($object->tab_previous_situation_invoice) && empty($object->tab_next_situation_invoice)) {
+                            $strToFind[] = 'td.linecolqty';
+                        }
                         if(! empty($user->rights->quickcustomerprice->edit_discount)) $strToFind[] = 'td.linecoldiscount';
                     ?>
 			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {

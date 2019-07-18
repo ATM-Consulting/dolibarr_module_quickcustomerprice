@@ -18,7 +18,7 @@
 	}
 	
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
-	global $db,$conf, $langs, $user;
+	global $db,$conf, $langs, $user, $hookmanager;
 	$error=0;
 	if($column == 'remise_percent') ${$column} = price2num(floatval($value));
 	else ${$column} = price2num($value);
@@ -44,6 +44,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		if(is_null($qty))$qty = $line->qty;
 		if(is_null($price))$price = $line->subprice;
 		if(is_null($remise_percent))$remise_percent = $line->remise_percent;
+		if(empty($remise_percent)) $remise_percent = 0;
 		if(is_null($situation_cycle_ref))$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
 
 		if ($objectelement == 'facture')
@@ -56,8 +57,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				$type = $product->type;
 
 				$price_min = $product->price_min;
-				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($object->thirdparty->price_level))
-					$price_min = $product->multiprices_min [$object->thirdparty->price_level];
+				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
+					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
@@ -71,6 +72,9 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			}
 			if (empty($error))
 			{
+                if($remise_percent === 'Offert') $remise_percent = 100;
+                if(strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
+
 				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx
 					, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $line->pa_ht, $line->label, $line->special_code
 					, $line->array_options, $situation_cycle_ref, $line->fk_unit);
@@ -88,8 +92,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				$type = $product->type;
 
 				$price_min = $product->price_min;
-				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($object->thirdparty->price_level))
-					$price_min = $product->multiprices_min [$object->thirdparty->price_level];
+				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
+					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
@@ -120,8 +124,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				$type = $product->type;
 
 				$price_min = $product->price_min;
-				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($object->thirdparty->price_level))
-					$price_min = $product->multiprices_min [$object->thirdparty->price_level];
+				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
+					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
 
 				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
 
@@ -158,6 +162,11 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			}
 			
 			$ret = $o->fetch($o->id); // Reload to get new records
+            $hookname = '';
+            if($o->element == 'commande') $hookname = 'ordercard';
+            if($o->element == 'propal') $hookname = 'propalcard';
+            if($o->element == 'facture') $hookname = 'invoicecard';
+            $hookmanager->initHooks(array($hookname, 'globalcard'));
 			$o->generateDocument($o->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 		}
 		

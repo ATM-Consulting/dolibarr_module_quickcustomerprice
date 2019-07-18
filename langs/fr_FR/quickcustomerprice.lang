@@ -7,3 +7,4 @@ quickcustomerpriceSetup = Configuration du module quickcustomerprice
 quickcustomerpriceAbout = A propos du module quickcustomerprice
 
 QCP_ALLOW_CHANGE_ON_VALIDATE=Autoriser la modification d'élément validé
+QCP_ENABLE_SUPPLIER_PART=Activer la prise en charge de la partie fournisseur

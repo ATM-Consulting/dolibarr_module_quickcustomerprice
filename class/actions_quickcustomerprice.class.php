@@ -252,9 +252,11 @@ class Actionsquickcustomerprice
 										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.msg);
 									}
 			  					});
-			  					
-			  					
-				  				
+
+			  					//On remplace en direct les montants de la fiche
+                                var url = "<?php echo $_SERVER['PHP_SELF'] ?>?id=" + objectid;
+                                $(".tabBar .fichehalfright").load(url + " .tabBar .fichehalfright .ficheaddleft");
+
 			  				});
 			  				
 			  			});

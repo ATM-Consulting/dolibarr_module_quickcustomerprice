@@ -86,14 +86,25 @@ class Actionsquickcustomerprice
 			if($object->statut > 0 && empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) return 0;
 
 			$TIDLinesToChange = $this->_getTIDLinesToChange($object);
-		  	?>
+
+            // enable hooks to register callbacks into the priceCallbacks array (the function are called
+            // at the end of the default callback when the Ajax call returns)
+            ?><script type="text/javascript">priceCallbacks = [];</script><?php
+            $reshook = $hookmanager->executeHooks('addJSCallbacks', $parameters, $object, $action);
+            if ($reshook > 0) {
+                echo $hookmanager->resPrint;
+            } elseif ($reshook < 0) {
+                // setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+                // return -1;
+            }
+            ?>
 		  	<script type="text/javascript">
 		  		$(document).ready(function() {
-		  			
+
 		  			<?php
-		  			
+
 		  			if( (float)DOL_VERSION<3.9 ) {
-		  				
+
 						?>
 						var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('PriceUHT') ?>)').prevAll('td').length ;
 						if(nb_col>0) {
@@ -101,41 +112,41 @@ class Actionsquickcustomerprice
 								$(item).find('td').eq(nb_col).addClass('linecoluht');
 							});
 						}
-						
+
 						var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('Qty') ?>)').prevAll('td').length ;
 						if(nb_col>0) {
 							$('table#tablelines tr[id]').each(function(i,item) {
 								$(item).find('td').eq(nb_col).addClass('linecolqty');
 							});
 						}
-						
+
 						var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('ReductionShort') ?>)').prevAll('td').length ;
 						if(nb_col>0) {
 							$('table#tablelines tr[id]').each(function(i,item) {
 								$(item).find('td').eq(nb_col).addClass('linecoldiscount');
 							});
-						
-							
+
+
 							<?php
 								$moreColForTotal = 1;
-							
-								if (! empty($conf->margin->enabled) && empty($user->societe_id)) $moreColForTotal++; 
+
+								if (! empty($conf->margin->enabled) && empty($user->societe_id)) $moreColForTotal++;
 								if (! empty($conf->global->DISPLAY_MARGIN_RATES) && $user->rights->margins->liretous) $moreColForTotal++;
 								if (! empty($conf->global->DISPLAY_MARK_RATES) && $user->rights->margins->liretous) $moreColForTotal++;
-							
+
 							?>
 							if(nb_col>0) {
 								$('table#tablelines tr[id]').each(function(i,item) {
 									$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('linecolht');
 								});
 							}
-						}	
+						}
 						<?php
-						
-						
-		  			}	
-		  		
-		  			
+
+
+		  			}
+
+
 		  			?>
 					var TIDLinesToChange = <?php echo json_encode($TIDLinesToChange); ?>;
 		  			<?php
@@ -159,11 +170,11 @@ class Actionsquickcustomerprice
 			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {
 			  			value = $(item).html();
 			  			if(value=='&nbsp;')value='';
-			  			
+
 			  			lineid = $(item).closest('tr').attr('id').substr(4);
 
 						if(TIDLinesToChange.indexOf(lineid) == -1) return;
-			  			
+
 			  			if($(item).hasClass('linecoldiscount')) {
 			  				col='remise_percent';
 			  			}
@@ -176,7 +187,7 @@ class Actionsquickcustomerprice
 			  			else {
 			  				col = 'price';
 			  			}
-			  			
+
 			  			$a = $('<a class="blue" style="text-decoration:underline;cursor:text;" />');
 			  			$a.attr('href', "javascript:;");
 			  			$a.attr('value', value);
@@ -184,19 +195,19 @@ class Actionsquickcustomerprice
 			  			$a.attr('lineid', lineid);
 			  			$a.attr('objectid', '<?php echo $object->id; ?>');
 			  			$a.attr('objectelement', '<?php echo $object->element; ?>');
-			  			
+
 			  			//if(value == '' || value=='&nbsp;') $(item).html('...');
-			  			
+
 			  			$(item).wrapInner($a);
-			  			
+
 			  			$(item).attr('align','right');
-			  			
+
 			  			$(item).append('<input type="text" class="flat qcp" name="qcp-price" style="display:none;" size="8" />');
-			  			
+
 			  			$(item).unbind().click(function() {
 			  				var $link = $(this).find('a');
 			  				var $input = $(this).find('input.qcp');
-			  				
+
 			  				if($link.is(':visible')) {
 				  				$link.hide();
 				  				$input.show();
@@ -204,18 +215,18 @@ class Actionsquickcustomerprice
 				  				$input.focus();
 				  				$input.select();
 			  				}
-			  				
+
 			  				$input.unbind();
 			  				$input.keypress(function (evt) {
 								//Deterime where our character code is coming from within the event
 								var charCode = evt.charCode || evt.keyCode;
 								if (charCode  == 13) { //Enter key's keycode
 									$input.blur();
-								
+
 									return false;
 								}
 							});
-			  				
+
 			  				$input.blur(function() {
 			  					var value = $(this).val();
 			  					var col = $link.attr('col');
@@ -225,7 +236,7 @@ class Actionsquickcustomerprice
 				  				$link.show();
 				  				$link.html('...');
 			  					$input.hide();
-			  					
+
 			  					$.ajax({
 			  						url:"<?php echo dol_buildpath('/quickcustomerprice/script/interface.php',1) ?>"
 			  						,data: {
@@ -246,29 +257,34 @@ class Actionsquickcustomerprice
 										$('tr[id=row-'+lineid+'] td.linecolcycleref a').html(data.situation_cycle_ref+'%');
 										<?php if( (float)DOL_VERSION>3.8 ) { ?>
 										  $('tr[id=row-'+lineid+'] td.linecoluttc').html(data.uttc);
-										<?php } ?>				  						
+										<?php } ?>
 										$link.attr('value',data[col]);
 
                                         //On remplace en direct les montants de la fiche
                                         var url = "<?php echo $_SERVER['PHP_SELF'] ?>?id=" + objectid;
                                         $(".tabBar .fichehalfright").load(url + " .tabBar .fichehalfright .ficheaddleft");
+
+                                        // we call the callback functions potentially added by hooks
+                                        priceCallbacks.forEach((callback) => {
+                                            callback(lineid, data);
+                                        });
 									}else if (data.error == 'updateFailed'){
 										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.msg);
 									}
 			  					});
 
 			  				});
-			  				
+
 			  			});
-			  			
+
 			  		});
-			  		
+
 		  		});
-		  		
+
 		  	</script>
-		  	
+
 		  	<?php
-		  
+
 		}
 
 		if (! $error)
@@ -283,7 +299,7 @@ class Actionsquickcustomerprice
 
 	private function _getTIDLinesToChange($object) {
 		$TRes = array();
-		
+
 		if(! empty($object->lines)) {
 			foreach($object->lines AS $line) {
 				if(($line->info_bits & 2) != 2) { // On empêche l'édition des lignes issues d'avoirs et de d'acomptes
@@ -291,7 +307,7 @@ class Actionsquickcustomerprice
 				}
 			}
 		}
-			
+
 		if($object->element == 'propal' && !empty($object->line)){ // New propal line
 			$TRes[] = strval($object->line->id);
 		}

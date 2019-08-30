@@ -91,11 +91,8 @@ class Actionsquickcustomerprice
             // at the end of the default callback when the Ajax call returns)
             ?><script type="text/javascript">priceCallbacks = [];</script><?php
             $reshook = $hookmanager->executeHooks('addJSCallbacks', $parameters, $object, $action);
-            if ($reshook > 0) {
+            if ($reshook >= 0) {
                 echo $hookmanager->resPrint;
-            } elseif ($reshook < 0) {
-                // setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
-                // return -1;
             }
             ?>
 		  	<script type="text/javascript">

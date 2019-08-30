@@ -234,12 +234,19 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
         'objectelement' => $objectelement
     );
     $reshook = $hookmanager->executeHooks('addJSONPayload', $parameters, $o);
-    if ($reshook > 0) {
-        if (!empty($hookmanager->resArray)) {
-            $Tab = array_merge($Tab, $hookmanager->resArray);
-        }
-    } elseif ($reshook < 0) {
-        setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+    switch ($reshook) {
+        case -1:
+            // error
+            setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+            break;
+        case 0:
+            // merge
+            if (!empty($hookmanager->resArray)) { $Tab = array_merge($Tab, $hookmanager->resArray); }
+            break;
+        case 1:
+            // replace
+            if (!empty($hookmanager->resArray)) { $Tab = $hookmanager->resArray; }
+            break;
     }
 	
 	return $Tab;

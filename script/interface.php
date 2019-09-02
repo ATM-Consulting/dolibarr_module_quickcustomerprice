@@ -207,7 +207,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				'total_ht'=>price($total_ht)
 		        ,'qty'=>$qty
 		        ,'price'=>price($price)
-			,'situation_cycle_ref'=>$situation_cycle_ref
+			    ,'situation_cycle_ref'=>$situation_cycle_ref
 		        ,'remise_percent'=>$remise_percent
 		        ,'uttc'=>$uttc
 			);
@@ -226,8 +226,28 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			'error'=>'noline'
 		);
 	}
-	
-	
+
+    // Allow hooks to add more data to the JSON
+    $parameters = array(
+        'json_payload' => $Tab,
+        'lineid' => $lineid,
+        'objectelement' => $objectelement
+    );
+    $reshook = $hookmanager->executeHooks('addJSONPayload', $parameters, $o);
+    switch ($reshook) {
+        case -1:
+            // error
+            setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+            break;
+        case 0:
+            // merge
+            if (!empty($hookmanager->resArray)) { $Tab = array_merge($Tab, $hookmanager->resArray); }
+            break;
+        case 1:
+            // replace
+            if (!empty($hookmanager->resArray)) { $Tab = $hookmanager->resArray; }
+            break;
+    }
 	
 	return $Tab;
 	

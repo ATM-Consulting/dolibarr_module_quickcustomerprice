@@ -276,6 +276,54 @@ class Actionsquickcustomerprice
 
 			  		});
 
+			  		/*
+			  		 * Extrafields
+			  		 */
+
+			  		$("span[id*='extras']").each(function(){
+			  		    let lineid = $(this).closest('tr').prevAll(("tr[id*='row']:first")).attr('id').substr(4);
+                        $a = $('<a class="blue quick-edit-extras" style="cursor:pointer;" />');
+                        $a.attr('href', "javascript:;");
+                        $a.attr('lineid',lineid);
+                        $a.attr('objectid', '<?php echo $object->id; ?>');
+                        $a.attr('objectelement', '<?php echo $object->element; ?>');
+						$a.html('<?php echo img_edit(); ?>');
+
+
+			  		    $(this).closest('td').attr('colspan',$(this).closest('td').attr('colspan')-2);
+                        $(this).closest('td').after($a);
+                        $a.wrap('<td></td>');
+					});
+
+			  		$(".quick-edit-extras").on('click',function(){
+						let extraTd = $(this).closest('td').prev(); //On récupère la td juste avant l'icone edit (qui est la td contenant l'extrafield puisqu'on a fait un after)
+                        let extrafieldCode = '';
+                        let spanToEdit = extraTd.find('span');
+						let TClassExtra = spanToEdit.attr('class').split('_');
+                        for (let i=0; i<TClassExtra.length; i++) {
+                            if(i==0 || i==1) continue;
+                            else if(i ==2) extrafieldCode = TClassExtra[i];
+                            else extrafieldCode += '_'+TClassExtra[i];
+                        }
+                        console.log(extrafieldCode);
+						let lineid = $(this).attr('lineid');
+						let objectelement = $(this).attr('objectelement');
+						$.ajax({
+                            url:"<?php echo dol_buildpath('/quickcustomerprice/script/interface.php',1) ?>"
+                            ,data: {
+                                get:'extrafield-value'
+                                ,code_extrafield:extrafieldCode
+                                ,lineid:lineid
+                                ,objectelement:objectelement
+                            }
+                            ,dataType:'html'
+                        }).done(function(data) {
+                            spanToEdit.html(data);
+                        });
+
+
+					});
+
 		  		});
 
 		  	</script>

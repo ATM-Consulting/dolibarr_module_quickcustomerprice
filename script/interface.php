@@ -9,7 +9,12 @@
 	dol_include_once('/supplier_proposal/class/supplier_proposal.class.php');
 	
 	$put = GETPOST('put');
-	
+	$get = GETPOST('get');
+	$objectid = GETPOST('objectid');
+	$objectelement = GETPOST('objectelement');
+	$lineid = GETPOST('lineid');
+	$code_extrafield = GETPOST('code_extrafield');
+
 	switch ($put) {
 		case 'price':
 			
@@ -18,6 +23,13 @@
 			echo json_encode($Tab);	
 			break;
 		
+	}
+	switch ($get) {
+		case 'extrafield-value':
+
+			echo _showExtrafield($objectelement, $lineid, $code_extrafield);
+			break;
+
 	}
 	
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
@@ -251,4 +263,22 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	
 	return $Tab;
 	
+}
+
+function _showExtrafield($objectelement, $lineid, $code_extrafield) {
+	global $db;
+	if ($objectelement == "order_supplier") $lineclass = "CommandeFournisseurLigne";
+	if ($objectelement == "invoice_supplier") $lineclass = "SupplierInvoiceLine";
+	if ($objectelement == "supplier_proposal") $lineclass = "SupplierProposalLine";
+	if ($objectelement == "facture") $lineclass = "FactureLigne";
+	if ($objectelement == "commande") $lineclass = "OrderLine";
+	if ($objectelement == "propal") $lineclass = "PropaleLigne";
+
+	$extrafields = new ExtraFields($db);
+	$line = new $lineclass($db);
+	$line->fetch($lineid);
+	$line->fetch_optionals();
+	$extrafields->fetch_name_optionals_label($line->element);
+	return $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield]);
+
 }

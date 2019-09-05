@@ -279,7 +279,7 @@ class Actionsquickcustomerprice
 			  		/*
 			  		 * Extrafields
 			  		 */
-
+					//Ajout du picto
 			  		$("span[id*='extras']").each(function(){
 			  		    let lineid = $(this).closest('tr').prevAll(("tr[id*='row']:first")).attr('id').substr(4);
                         $a = $('<a class="blue quick-edit-extras" style="cursor:pointer;" />');
@@ -294,7 +294,7 @@ class Actionsquickcustomerprice
                         $(this).closest('td').after($a);
                         $a.wrap('<td></td>');
 					});
-
+					//On affiche l'input
 			  		$(".quick-edit-extras").on('click',function(){
 						let extraTd = $(this).closest('td').prev(); //On récupère la td juste avant l'icone edit (qui est la td contenant l'extrafield puisqu'on a fait un after)
                         let extrafieldCode = '';
@@ -305,7 +305,7 @@ class Actionsquickcustomerprice
                             else if(i ==2) extrafieldCode = TClassExtra[i];
                             else extrafieldCode += '_'+TClassExtra[i];
                         }
-                        console.log(extrafieldCode);
+
 						let lineid = $(this).attr('lineid');
 						let objectelement = $(this).attr('objectelement');
 						$.ajax({
@@ -320,7 +320,88 @@ class Actionsquickcustomerprice
                         }).done(function(data) {
                             spanToEdit.html(data);
                         });
+					});
 
+			  		//On met à jour l'input
+					$(document).on('click', '.quickSaveExtra', function(){
+					    let value = '';
+					    let extrafieldCode = $(this).attr('extracode');
+					    let lineid = $(this).attr('lineid');
+					    let type = $(this).attr('type');
+					    let lineclass = $(this).attr('lineclass');
+					    let spanToEdit = $(this).closest('span[id*="extras"]');
+						//le cas d'un input type text classique
+						if(type == 'varchar'
+							|| type == 'int'
+							|| type == 'price'
+							|| type == 'phone'
+                            || type == 'mail'
+                            || type == 'phone'
+                            || type == 'url'
+							|| type == 'password'
+							|| type == 'link') {
+
+							let siblings = $(this).siblings('input');
+                            value = $(siblings[0]).val();
+						}
+						//Wysiwyg
+						if(type == 'text') {
+                            elem = $(this).siblings('div')[0];
+                            iframe = $(elem).find("iframe")[0];
+                            value = (iframe.contentWindow.document.body.innerHTML);
+						}
+						/*
+						 * Type date
+						 */
+                        if(type == 'date' || type == 'datetime') {
+                            let hour = '00';
+                            let min = '00';
+                            let day = $($(this).siblings('input[name*="day"]')[0]).val();
+                            let month = $($(this).siblings('input[name*="month"]')[0]).val();
+                            let year = $($(this).siblings('input[name*="year"]')[0]).val();
+                            if($(this).siblings('select[name*=hour]').length > 0) {
+								hour = $($(this).siblings('select[name*=hour]')[0]).val();
+								min = $($(this).siblings('select[name*=min]')[0]).val();
+							}
+                            let date = new Date(year,month-1,day,hour,min);
+                            value = Math.floor(date / 1000);
+                        }
+                        /*
+                         * Boolean
+                         */
+                        if(type == 'boolean') {
+							if($($(this).siblings('input')[0]).is(':checked')) value = 1;
+							else value = 0;
+							console.log(value);
+						}
+                        /*
+                         * Select
+                         */
+                        if(type == 'select' || type == 'sellist') {
+                            value = $($(this).siblings('select')[0]).val();
+                        }
+                        /*
+						* Multiselect
+						*/
+                        if(type == 'checkbox' || type == 'chkbxlst') {
+                            value = $($(this).siblings('select')[0]).select2('val');
+                        }
+						//TODO DEBUG radio, checkbox, checkboxlist, et datetime puis tester sur tous les objets
+
+                        $.ajax({
+                            url:"<?php echo dol_buildpath('/quickcustomerprice/script/interface.php',1) ?>"
+                            ,data: {
+                                put:'extrafield-value'
+                                ,code_extrafield:extrafieldCode
+                                ,type:type
+                                ,lineid:lineid
+                                ,lineclass:lineclass
+								,value: value
+                            }
+                            ,dataType:'html'
+                        }).done(function(data) {
+                            spanToEdit.html(data);
+                        });
 
 					});
 

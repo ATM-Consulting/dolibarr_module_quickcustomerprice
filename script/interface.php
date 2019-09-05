@@ -13,6 +13,9 @@
 	$objectid = GETPOST('objectid');
 	$objectelement = GETPOST('objectelement');
 	$lineid = GETPOST('lineid');
+	$lineclass = GETPOST('lineclass');
+	$type = GETPOST('type');
+	$value = GETPOST('value');
 	$code_extrafield = GETPOST('code_extrafield');
 
 	switch ($put) {
@@ -21,6 +24,10 @@
 			$Tab = _updateObjectLine(GETPOST('objectid'),GETPOST('objectelement'),GETPOST('lineid'),GETPOST('column'), GETPOST('value'));
 					
 			echo json_encode($Tab);	
+			break;
+		case 'extrafield-value':
+
+			echo _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value);
 			break;
 		
 	}
@@ -279,6 +286,20 @@ function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 	$line->fetch($lineid);
 	$line->fetch_optionals();
 	$extrafields->fetch_name_optionals_label($line->element);
-	return $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield]);
+	return $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield])
+		.'&nbsp;&nbsp;<span class="quickSaveExtra" style="cursor:pointer;" type="'.$extrafields->attribute_type[$code_extrafield].'" extracode="'.$code_extrafield.'" lineid="'.$lineid.'" lineclass="'.$lineclass.'"><i class="fa fa-check" aria-hidden="true"></i></span>';
+
+}
+
+function _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value) {
+	global $db;
+	$line = new $lineclass($db);
+	$line->fetch($lineid);
+	$line->fetch_optionals();
+	$line->array_options['options_' . $code_extrafield] = $value;
+	$line->update();
+	$extrafields = new ExtraFields($db);
+	$extrafields->fetch_name_optionals_label($line->element);
+	return $extrafields->showOutputField($code_extrafield, $line->array_options['options_' . $code_extrafield]);
 
 }

@@ -33,7 +33,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	
 	$o=new $objectelement($db);
 	$o->fetch($objectid);
-	
+
 	if(!empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) {
 		$o->brouillon=1;		
 	}
@@ -201,7 +201,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		}
 		
 		
-		if($res>0) {
+		if($res>=0) {
 		
 			$Tab=array(
 				'total_ht'=>price($total_ht)

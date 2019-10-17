@@ -302,10 +302,12 @@ class Actionsquickcustomerprice
 						let TClassExtra = spanToEdit.attr('class').split('_');
                         for (let i=0; i<TClassExtra.length; i++) {
                             if(i==0 || i==1) continue;
-                            else if(i ==2) extrafieldCode = TClassExtra[i];
+
+                            else if(i ==2 && TClassExtra[2] != 'extras' || i==3 && TClassExtra[2] == 'extras') extrafieldCode = TClassExtra[i];
+                            else if( i== 2) continue;
                             else extrafieldCode += '_'+TClassExtra[i];
                         }
-
+                        console.log(TClassExtra);
 						let lineid = $(this).attr('lineid');
 						let objectelement = $(this).attr('objectelement');
 						$.ajax({
@@ -372,7 +374,6 @@ class Actionsquickcustomerprice
                         if(type == 'boolean') {
 							if($($(this).siblings('input')[0]).is(':checked')) value = 1;
 							else value = 0;
-							console.log(value);
 						}
                         /*
                          * Select
@@ -386,7 +387,12 @@ class Actionsquickcustomerprice
                         if(type == 'checkbox' || type == 'chkbxlst') {
                             value = $($(this).siblings('select')[0]).select2('val');
                         }
-						//TODO DEBUG radio, checkbox, checkboxlist, et datetime puis tester sur tous les objets
+                        /*
+                         * Radio
+                         */
+                        if(type == 'radio') {
+                            value = $(this).siblings('input:checked').val();
+						}
 
                         $.ajax({
                             url:"<?php echo dol_buildpath('/quickcustomerprice/script/interface.php',1) ?>"

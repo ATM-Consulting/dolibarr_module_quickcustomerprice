@@ -296,10 +296,15 @@ function _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value) {
 	$line = new $lineclass($db);
 	$line->fetch($lineid);
 	$line->fetch_optionals();
-	$line->array_options['options_' . $code_extrafield] = $value;
-	$line->update();
 	$extrafields = new ExtraFields($db);
 	$extrafields->fetch_name_optionals_label($line->element);
+
+	if($extrafields->attribute_type[$code_extrafield] == 'datetime') $value = (int) $value;
+
+	if(is_array($value)) $value = implode(',', $value);
+	$line->array_options['options_' . $code_extrafield] = $value;
+	$line->update();
+
 	return $extrafields->showOutputField($code_extrafield, $line->array_options['options_' . $code_extrafield]);
 
 }

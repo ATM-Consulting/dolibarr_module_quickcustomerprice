@@ -307,7 +307,7 @@ class Actionsquickcustomerprice
                             else if( i== 2) continue;
                             else extrafieldCode += '_'+TClassExtra[i];
                         }
-                        console.log(TClassExtra);
+
 						let lineid = $(this).attr('lineid');
 						let objectelement = $(this).attr('objectelement');
 						$.ajax({
@@ -365,8 +365,10 @@ class Actionsquickcustomerprice
 								hour = $($(this).siblings('select[name*=hour]')[0]).val();
 								min = $($(this).siblings('select[name*=min]')[0]).val();
 							}
-                            let date = new Date(year,month-1,day,hour,min);
-                            value = Math.floor(date / 1000);
+                            if(year != '') {
+                                let date = new Date(year,month-1,day,hour,min);
+                            	value = Math.floor(date / 1000);
+                            }
                         }
                         /*
                          * Boolean

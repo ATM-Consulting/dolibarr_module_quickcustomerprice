@@ -299,7 +299,7 @@ function _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value) {
 	$extrafields = new ExtraFields($db);
 	$extrafields->fetch_name_optionals_label($line->element);
 
-	if($extrafields->attribute_type[$code_extrafield] == 'datetime') $value = (int) $value;
+	if($extrafields->attribute_type[$code_extrafield] == 'datetime' && !empty($value)) $value = (int) $value;
 
 	if(is_array($value)) $value = implode(',', $value);
 	$line->array_options['options_' . $code_extrafield] = $value;

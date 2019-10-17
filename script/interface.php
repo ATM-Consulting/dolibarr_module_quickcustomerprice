@@ -54,7 +54,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	$o->fetch($objectid);
 
 	if(!empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) {
-		$o->brouillon=1;		
+		$o->brouillon=1;
+		$o->statut = $objectelement::STATUS_DRAFT;
 	}
 	
 	$find=false;

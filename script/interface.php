@@ -9,7 +9,15 @@
 	dol_include_once('/supplier_proposal/class/supplier_proposal.class.php');
 	
 	$put = GETPOST('put');
-	
+	$get = GETPOST('get');
+	$objectid = GETPOST('objectid');
+	$objectelement = GETPOST('objectelement');
+	$lineid = GETPOST('lineid');
+	$lineclass = GETPOST('lineclass');
+	$type = GETPOST('type');
+	$value = GETPOST('value');
+	$code_extrafield = GETPOST('code_extrafield');
+
 	switch ($put) {
 		case 'price':
 			
@@ -17,7 +25,18 @@
 					
 			echo json_encode($Tab);	
 			break;
+		case 'extrafield-value':
+
+			echo _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value);
+			break;
 		
+	}
+	switch ($get) {
+		case 'extrafield-value':
+
+			echo _showExtrafield($objectelement, $lineid, $code_extrafield);
+			break;
+
 	}
 	
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
@@ -35,7 +54,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	$o->fetch($objectid);
 
 	if(!empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) {
-		$o->brouillon=1;		
+		$o->brouillon=1;
+		$o->statut = $objectelement::STATUS_DRAFT;
 	}
 	
 	$find=false;
@@ -251,4 +271,41 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	
 	return $Tab;
 	
+}
+
+function _showExtrafield($objectelement, $lineid, $code_extrafield) {
+	global $db;
+	if ($objectelement == "order_supplier") $lineclass = "CommandeFournisseurLigne";
+	if ($objectelement == "invoice_supplier") $lineclass = "SupplierInvoiceLine";
+	if ($objectelement == "supplier_proposal") $lineclass = "SupplierProposalLine";
+	if ($objectelement == "facture") $lineclass = "FactureLigne";
+	if ($objectelement == "commande") $lineclass = "OrderLine";
+	if ($objectelement == "propal") $lineclass = "PropaleLigne";
+
+	$extrafields = new ExtraFields($db);
+	$line = new $lineclass($db);
+	$line->fetch($lineid);
+	$line->fetch_optionals();
+	$extrafields->fetch_name_optionals_label($line->element);
+	return $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield])
+		.'&nbsp;&nbsp;<span class="quickSaveExtra" style="cursor:pointer;" type="'.$extrafields->attribute_type[$code_extrafield].'" extracode="'.$code_extrafield.'" lineid="'.$lineid.'" lineclass="'.$lineclass.'"><i class="fa fa-check" aria-hidden="true"></i></span>';
+
+}
+
+function _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value) {
+	global $db;
+	$line = new $lineclass($db);
+	$line->fetch($lineid);
+	$line->fetch_optionals();
+	$extrafields = new ExtraFields($db);
+	$extrafields->fetch_name_optionals_label($line->element);
+
+	if($extrafields->attribute_type[$code_extrafield] == 'datetime' && !empty($value)) $value = (int) $value;
+
+	if(is_array($value)) $value = implode(',', $value);
+	$line->array_options['options_' . $code_extrafield] = $value;
+	$line->update();
+
+	return $extrafields->showOutputField($code_extrafield, $line->array_options['options_' . $code_extrafield]);
+
 }

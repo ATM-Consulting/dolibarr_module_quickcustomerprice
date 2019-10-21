@@ -46,7 +46,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		}
 	}
 	
-	if($find) {	
+	if($find) {
 		if(is_null($qty))$qty = $line->qty;
 		if(is_null($price))$price = $line->subprice;
 		if(is_null($remise_percent))$remise_percent = $line->remise_percent;
@@ -152,6 +152,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		}
 		else if ($objectelement == "CommandeFournisseur")
         {
+        	if(isset($price) && intval($price) === 0) $line->multicurrency_subprice = 0;
             $res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, 0, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $line->multicurrency_subprice, $line->ref_supplier);
             $total_ht = $o->line->total_ht;
             $uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;

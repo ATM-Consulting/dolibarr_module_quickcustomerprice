@@ -7,7 +7,7 @@
 	dol_include_once('/fourn/class/fournisseur.commande.class.php');
 	dol_include_once('/fourn/class/fournisseur.facture.class.php');
 	dol_include_once('/supplier_proposal/class/supplier_proposal.class.php');
-	
+
 	$put = GETPOST('put');
 	$get = GETPOST('get');
 	$objectid = GETPOST('objectid');
@@ -20,16 +20,16 @@
 
 	switch ($put) {
 		case 'price':
-			
+
 			$Tab = _updateObjectLine(GETPOST('objectid'),GETPOST('objectelement'),GETPOST('lineid'),GETPOST('column'), GETPOST('value'));
-					
-			echo json_encode($Tab);	
+
+			echo json_encode($Tab);
 			break;
 		case 'extrafield-value':
 
 			echo _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value);
 			break;
-		
+
 	}
 	switch ($get) {
 		case 'extrafield-value':
@@ -38,18 +38,18 @@
 			break;
 
 	}
-	
+
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	global $db,$conf, $langs, $user, $hookmanager;
 	$error=0;
 	if($column == 'remise_percent') ${$column} = price2num(floatval($value));
 	else ${$column} = price2num($value);
-	
+
 	$Tab = array();
 	if ($objectelement == "order_supplier") $objectelement = "CommandeFournisseur";
 	if ($objectelement == "invoice_supplier") $objectelement = "FactureFournisseur";
 	if ($objectelement == "supplier_proposal") $objectelement = "SupplierProposal";
-	
+
 	$o=new $objectelement($db);
 	$o->fetch($objectid);
 
@@ -57,7 +57,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		$o->brouillon=1;
 		$o->statut = $objectelement::STATUS_DRAFT;
 	}
-	
+
 	$find=false;
 	foreach($o->lines as &$line) {
 		if($line->id == $lineid || $line->rowid == $lineid) {
@@ -65,8 +65,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			break;
 		}
 	}
-	
-	if($find) {	
+
+	if($find) {
 		if(is_null($qty))$qty = $line->qty;
 		if(is_null($price))$price = $line->subprice;
 		if(is_null($remise_percent))$remise_percent = $line->remise_percent;
@@ -211,7 +211,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				$outputlangs = new Translate("", $conf);
 				$outputlangs->setDefaultLang($newlang);
 			}
-			
+
 			$ret = $o->fetch($o->id); // Reload to get new records
             $hookname = '';
             if($o->element == 'commande') $hookname = 'ordercard';
@@ -220,10 +220,10 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
             $hookmanager->initHooks(array($hookname, 'globalcard'));
 			$o->generateDocument($o->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 		}
-		
-		
+
+
 		if($res>=0) {
-		
+
 			$Tab=array(
 				'total_ht'=>price($total_ht)
 		        ,'qty'=>$qty
@@ -232,8 +232,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		        ,'remise_percent'=>$remise_percent
 		        ,'uttc'=>$uttc
 			);
-			
-			
+
+
 		}
 		else{
 			$Tab=array(
@@ -269,9 +269,9 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
             if (!empty($hookmanager->resArray)) { $Tab = $hookmanager->resArray; }
             break;
     }
-	
+
 	return $Tab;
-	
+
 }
 
 function _showExtrafield($objectelement, $lineid, $code_extrafield) {
@@ -294,18 +294,19 @@ function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 }
 
 function _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value) {
-	global $db;
+	global $db, $user;
 	$line = new $lineclass($db);
 	$line->fetch($lineid);
 	$line->fetch_optionals();
 	$extrafields = new ExtraFields($db);
 	$extrafields->fetch_name_optionals_label($line->element);
 
-	if($extrafields->attribute_type[$code_extrafield] == 'datetime' && !empty($value)) $value = (int) $value;
+	if(($extrafields->attribute_type[$code_extrafield] == 'datetime' || $extrafields->attribute_type[$code_extrafield] == 'date') && !empty($value)) $value = (int) $value;
 
 	if(is_array($value)) $value = implode(',', $value);
 	$line->array_options['options_' . $code_extrafield] = $value;
-	$line->update();
+	if($lineclass !== "OrderLine") $line->update();
+	else $line->update($user);
 
 	return $extrafields->showOutputField($code_extrafield, $line->array_options['options_' . $code_extrafield]);
 

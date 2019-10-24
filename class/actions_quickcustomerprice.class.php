@@ -64,7 +64,7 @@ class Actionsquickcustomerprice
         global $user, $conf;
 
 		$error = 0;
-//var_dump($parameters['currentcontext']);		
+//var_dump($parameters['currentcontext']);
 		if (
 			$parameters['currentcontext'] == 'propalcard'
 			|| $parameters['currentcontext'] == 'ordercard'
@@ -280,8 +280,8 @@ class Actionsquickcustomerprice
 			  		 * Extrafields
 			  		 */
 					//Ajout du picto
-			  		$("span[id*='extras']").each(function(){
-			  		    let lineid = $(this).closest('tr').prevAll(("tr[id*='row']:first")).attr('id').substr(4);
+			  		$("#tablelines").find("[id*='extras']").each(function(){
+			  		    let lineid = $(this).closest('tr').prevAll(("tr[id^='row']:first")).attr('id').substr(4);
                         $a = $('<a class="blue quick-edit-extras" style="cursor:pointer;" />');
                         $a.attr('href', "javascript:;");
                         $a.attr('lineid',lineid);
@@ -299,6 +299,7 @@ class Actionsquickcustomerprice
 						let extraTd = $(this).closest('td').prev(); //On récupère la td juste avant l'icone edit (qui est la td contenant l'extrafield puisqu'on a fait un after)
                         let extrafieldCode = '';
                         let spanToEdit = extraTd.find('span');
+                        if(spanToEdit.length == 0) spanToEdit = extraTd;
 						let TClassExtra = spanToEdit.attr('class').split('_');
                         for (let i=0; i<TClassExtra.length; i++) {
                             if(i==0 || i==1) continue;
@@ -331,7 +332,7 @@ class Actionsquickcustomerprice
 					    let lineid = $(this).attr('lineid');
 					    let type = $(this).attr('type');
 					    let lineclass = $(this).attr('lineclass');
-					    let spanToEdit = $(this).closest('span[id*="extras"]');
+					    let spanToEdit = $(this).closest('[id*="extras"]');
 						//le cas d'un input type text classique
 						if(type == 'varchar'
 							|| type == 'int'

@@ -97,7 +97,7 @@ class modquickcustomerprice extends DolibarrModules
 		$this->dirs = array();
 
 		// Config pages. Put here list of php page, stored into quickcustomerprice/admin directory, to use to setup module.
-		$this->config_page_url = array('quickcustomerprice_setup.php@quickcustomerprice');
+//		$this->config_page_url = array('quickcustomerprice_setup.php@quickcustomerprice');
 
 		// Dependencies
 		$this->hidden = false;			// A condition to hide module
@@ -172,25 +172,6 @@ class modquickcustomerprice extends DolibarrModules
 
 		// Permissions
 		$this->rights = array();		// Permission array used by this module
-		$r=0;
-
-         $this->rights[$r][0] = $this->numero.$r;
-		 $this->rights[$r][1] = 'Edition rapide du prix unitaire';
-		 $this->rights[$r][3] = 0;
-		 $this->rights[$r][4] = 'edit_unit_price';
-		 $r++;
-
-         $this->rights[$r][0] = $this->numero.$r;
-		 $this->rights[$r][1] = 'Edition rapide de la quantité';
-		 $this->rights[$r][3] = 0;
-		 $this->rights[$r][4] = 'edit_quantity';
-		 $r++;
-
-         $this->rights[$r][0] = $this->numero.$r;
-		 $this->rights[$r][1] = 'Edition rapide de la réduction';
-		 $this->rights[$r][3] = 0;
-		 $this->rights[$r][4] = 'edit_discount';
-		 $r++;
 
 		// Add here list of permission defined by an id, a label, a boolean and two constant strings.
 		// Example:

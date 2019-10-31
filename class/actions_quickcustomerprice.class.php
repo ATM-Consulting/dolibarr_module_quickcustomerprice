@@ -100,18 +100,20 @@ class Actionsquickcustomerprice
 
                             let submitForm = function (ev) {
                                 ev.preventDefault();
+                                for (let ckeName in CKEDITOR.instances) {
+                                    if (CKEDITOR.instances.hasOwnProperty(ckeName)) {
+                                        let ckeInstance = CKEDITOR.instances[ckeName];
+                                        let textarea = $(ckeInstance.element.$);
+                                        textarea.val(ckeInstance.getData());
+                                        console.log(ckeName, textarea[0], ckeInstance.getData(), textarea[0].name);
+                                    }
+                                }
                                 let submitData = $(this).serializeArray();
                                 if (ev.originalEvent.explicitOriginalTarget.name === 'cancel') {
                                     return cancelSubmit(ev);
                                 }
 
                                 submitData.push({name: 'save', value: $('#savelinebutton').val()});
-                                $('div[id^="cke_options_"]').each(function () {
-                                    // adapted from https://stackoverflow.com/questions/3147670/ckeditor-update-textarea
-                                    let extrafieldCode = this.id.match('cke_options_(.*)')[1];
-                                    let textarea = $('textarea#options_' + extrafieldCode);
-                                    textarea.val(CKEDITOR.instances['options_' + extrafieldCode].getData());
-                                });
 
                                 $.post($('#addproduct').attr('action'), submitData, function (responsePost) {
                                     $('#id-right').replaceWith($(responsePost).find('#id-right'));

@@ -73,6 +73,9 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		if(is_null($pa_ht))$pa_ht = $line->pa_ht;
 		if(empty($remise_percent)) $remise_percent = 0;
 		if(is_null($situation_cycle_ref))$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
+        $marginInfos = getMarginInfos($price, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->fk_fournprice, $pa_ht);
+        $line->marge_tx = $marginInfos[1];
+        $line->marque_tx = $marginInfos[2];
 
 		if ($objectelement == 'facture')
 		{
@@ -228,7 +231,9 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			$Tab=array(
 				'total_ht'=>price($total_ht)
 		        ,'qty'=>$qty
-		        ,'pa_ht'=>$pa_ht
+		        ,'pa_ht'=>price($pa_ht)
+		        ,'marge_tx'=>price($line->marge_tx,2).' %'
+		        ,'marque_tx'=>price($line->marque_tx,2).' %'
 		        ,'price'=>price($price)
 			    ,'situation_cycle_ref'=>$situation_cycle_ref
 		        ,'remise_percent'=>$remise_percent

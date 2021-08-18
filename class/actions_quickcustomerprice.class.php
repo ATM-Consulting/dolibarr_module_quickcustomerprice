@@ -253,6 +253,8 @@ class Actionsquickcustomerprice
 										$('tr[id=row-'+lineid+'] td.linecoldiscount a').html((data.remise_percent == 0 || data.remise_percent == '') ? '&nbsp;' : data.remise_percent+'%');
 										$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
 										$('tr[id=row-'+lineid+'] td.linecolmargin1 a').html(data.pa_ht);
+										$('tr[id=row-'+lineid+'] td.linecolmargin2:first').html(data.marge_tx);
+										$('tr[id=row-'+lineid+'] td.linecolmargin2:eq(1)').html(data.marque_tx);
 										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
 										$('tr[id=row-'+lineid+'] td.linecolcycleref a').html(data.situation_cycle_ref+'%');
 										<?php if( (float)DOL_VERSION>3.8 ) { ?>

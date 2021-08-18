@@ -163,6 +163,7 @@ class Actionsquickcustomerprice
                             $strToFind[] = 'td.linecolqty';
                         }
                         if(! empty($user->rights->quickcustomerprice->edit_discount)) $strToFind[] = 'td.linecoldiscount';
+                        if(! empty($conf->margin->enabled)) $strToFind[] = 'td.linecolmargin1';
                     ?>
 			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {
 			  			value = $(item).html();
@@ -177,10 +178,11 @@ class Actionsquickcustomerprice
 			  			}
 			  			else if($(item).hasClass('linecolqty')) {
 			  				col='qty';
-			  			}
-                                                else if($(item).hasClass('linecolcycleref')) {
-                                                        col='situation_cycle_ref';
-                                                }
+			  			} else if ($(item).hasClass('linecolmargin1')) {
+                            col = 'pa_ht';
+                        } else if ($(item).hasClass('linecolcycleref')) {
+                            col = 'situation_cycle_ref';
+                        }
 			  			else {
 			  				col = 'price';
 			  			}
@@ -250,6 +252,9 @@ class Actionsquickcustomerprice
 										$('tr[id=row-'+lineid+'] td.linecolht').html(data.total_ht);
 										$('tr[id=row-'+lineid+'] td.linecoldiscount a').html((data.remise_percent == 0 || data.remise_percent == '') ? '&nbsp;' : data.remise_percent+'%');
 										$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
+										$('tr[id=row-'+lineid+'] td.linecolmargin1 a').html(data.pa_ht);
+										$('tr[id=row-'+lineid+'] td.linecolmargin2:first').html(data.marge_tx);
+										$('tr[id=row-'+lineid+'] td.linecolmargin2:eq(1)').html(data.marque_tx);
 										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
 										$('tr[id=row-'+lineid+'] td.linecolcycleref a').html(data.situation_cycle_ref+'%');
 										<?php if( (float)DOL_VERSION>3.8 ) { ?>

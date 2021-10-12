@@ -1,4 +1,6 @@
 <?php
+	if (!defined("NOCSRFCHECK")) define('NOCSRFCHECK', 1);
+	if (!defined("NOTOKENRENEWAL")) define('NOTOKENRENEWAL', 1);
 
 	require('../config.php');
 	dol_include_once('/comm/propal/class/propal.class.php');

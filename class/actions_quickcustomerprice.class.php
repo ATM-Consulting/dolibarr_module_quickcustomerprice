@@ -64,7 +64,7 @@ class Actionsquickcustomerprice
         global $user, $conf;
 
 		$error = 0;
-//var_dump($parameters['currentcontext']);
+
 		if (
 			$parameters['currentcontext'] == 'propalcard'
 			|| $parameters['currentcontext'] == 'ordercard'
@@ -264,7 +264,12 @@ class Actionsquickcustomerprice
 
                                         //On remplace en direct les montants de la fiche
                                         var url = "<?php echo $_SERVER['PHP_SELF'] ?>?id=" + objectid;
-                                        $(".tabBar .fichehalfright").load(url + " .tabBar .fichehalfright .ficheaddleft");
+
+										<?php if (version_compare(DOL_VERSION, '14.0', '>')) { ?>
+                                        	$(".tabBar .fichecenter").load(url + " .tabBar .fichecenter .fichehalfleft, .tabBar .fichecenter .fichehalfright");
+										<?PHP }else { ?>
+											$(".tabBar .fichehalfright").load(url + " .tabBar .fichehalfright .ficheaddleft");
+										<?PHP } ?>
 
                                         // we call the callback functions potentially added by hooks
                                         priceCallbacks.forEach((callback) => {

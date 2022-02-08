@@ -290,25 +290,38 @@ class Actionsquickcustomerprice
 			  		 * Extrafields
 			  		 */
 					//Ajout du picto
-			  		$("#tablelines").find("[id*='extras']").each(function(){
-			  		    let lineid = $(this).closest('tr').prevAll(("tr[id^='row']:first")).attr('id').substr(4);
+
+                    $('#tablelines').find('[id*=\'extras\']').each(function () {
+                        <?php if(floatval(DOL_VERSION) < 14) { ?>
+                            let lineid = $(this).closest('tr').attr('id').substr(4);
+                        <?php } else {?>
+                        <?php }?>
                         $a = $('<a class="blue quick-edit-extras" style="cursor:pointer;" />');
-                        $a.attr('href', "javascript:;");
-                        $a.attr('lineid',lineid);
+                        $a.attr('href', 'javascript:;');
+                        $a.attr('lineid', lineid);
                         $a.attr('objectid', '<?php echo $object->id; ?>');
                         $a.attr('objectelement', '<?php echo $object->element; ?>');
-						$a.html('<?php echo img_edit(); ?>');
+                        $a.html('<?php echo img_edit(); ?>');
 
+						<?php if(floatval(DOL_VERSION) < 14) { ?>
+                            $(this).closest('td').attr('colspan', $(this).closest('td').attr('colspan')-2);
+                            $(this).closest('td').after($a);
+                            $a.wrap('<td></td>');
 
-			  		    $(this).closest('td').attr('colspan',$(this).closest('td').attr('colspan')-2);
-                        $(this).closest('td').after($a);
-                        $a.wrap('<td></td>');
-					});
+						<?php } else {?>
+                            $(this).after($a);
+                            $(this).after("&nbsp;&nbsp;&nbsp;");
+                    <?php }?>
+                          });
 					//On affiche l'input
 			  		$(".quick-edit-extras").on('click',function(){
-						let extraTd = $(this).closest('td').prev(); //On récupère la td juste avant l'icone edit (qui est la td contenant l'extrafield puisqu'on a fait un after)
-                        let extrafieldCode = '';
-                        let spanToEdit = extraTd.find('span');
+                        <?php if(floatval(DOL_VERSION) < 14) { ?>
+                            let extraTd = $(this).closest('td').prev(); //On récupère la td juste avant l'icone edit (qui est la td contenant l'extrafield puisqu'on a fait un after)
+                            let extrafieldCode = '';
+                            let spanToEdit = extraTd.find('span');
+                        <?php } else {?>
+                             let spanToEdit = $(this).prev('div');
+                        <?php }?>
                         if(spanToEdit.length == 0) spanToEdit = extraTd;
 						let TClassExtra = spanToEdit.attr('class').split('_');
                         for (let i=0; i<TClassExtra.length; i++) {
@@ -333,6 +346,9 @@ class Actionsquickcustomerprice
                         }).done(function(data) {
                             spanToEdit.html(data);
                         });
+                        <?php if(floatval(DOL_VERSION) >= 14) { ?>
+                            $(this).hide();
+                        <?php } ?>
 					});
 
 			  		//On met à jour l'input
@@ -343,6 +359,9 @@ class Actionsquickcustomerprice
 					    let type = $(this).attr('type');
 					    let lineclass = $(this).attr('lineclass');
 					    let spanToEdit = $(this).closest('[id*="extras"]');
+                         <?php if(floatval(DOL_VERSION) >= 14) { ?>
+                            $(this).closest('td').find('.quick-edit-extras').show();
+                        <?php } ?>
 						//le cas d'un input type text classique
 						if(type == 'varchar'
 							|| type == 'int'

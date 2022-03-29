@@ -235,7 +235,6 @@ class Actionsquickcustomerprice
 				  				$link.show();
 				  				$link.html('...');
 			  					$input.hide();
-
 			  					$.ajax({
 			  						url:"<?php echo dol_buildpath('/quickcustomerprice/script/interface.php',1) ?>"
 			  						,data: {
@@ -292,11 +291,10 @@ class Actionsquickcustomerprice
 					//Ajout du picto
 
                     $('#tablelines').find('[id*=\'extras\']').each(function () {
-                        <?php if(floatval(DOL_VERSION) < 14) { ?>
-                            let lineid = $(this).closest('tr').attr('id').substr(4);
-                        <?php } else {?>
-                        <?php }?>
-                        $a = $('<a class="blue quick-edit-extras" style="cursor:pointer;" />');
+
+						let lineid = $(this).closest('tr').attr('id').substr(4);
+
+						$a = $('<a class="blue quick-edit-extras" style="cursor:pointer;" />');
                         $a.attr('href', 'javascript:;');
                         $a.attr('lineid', lineid);
                         $a.attr('objectid', '<?php echo $object->id; ?>');

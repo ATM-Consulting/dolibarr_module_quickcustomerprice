@@ -34,7 +34,7 @@ require_once '../lib/quickcustomerprice.lib.php';
 
 // Translations
 $langs->load("quickcustomerprice@quickcustomerprice");
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 // Access control
 if (! $user->admin) {
     accessforbidden();
@@ -112,7 +112,7 @@ print '<td>'.$langs->trans("QCP_ALLOW_CHANGE_ON_VALIDATE").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_QCP_ALLOW_CHANGE_ON_VALIDATE">';
 print $form->selectyesno("QCP_ALLOW_CHANGE_ON_VALIDATE",$conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE,1);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
@@ -125,7 +125,7 @@ print '<td>'.$langs->trans("QCP_ENABLE_SUPPLIER_PART").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_QCP_ENABLE_SUPPLIER_PART">';
 print $form->selectyesno("QCP_ENABLE_SUPPLIER_PART",$conf->global->QCP_ENABLE_SUPPLIER_PART,1);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';

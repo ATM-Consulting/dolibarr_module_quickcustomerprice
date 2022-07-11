@@ -4,6 +4,8 @@
 
 
 ## 3.1
+
+- FIX: change family name - *02/06/2022* - 3.1.6
 - FIX: Compatibility V16 : newToken - *02/06/2022* - 3.1.5
 - FIX: save for wrong line - *2022-03-29* - 3.1.4
 - FIX: v14 compatibility quick extrafield - *2022-02-07* - 3.1.3

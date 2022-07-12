@@ -69,12 +69,12 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	}
 
 	if($find) {
-		if(is_null($qty))$qty = $line->qty;
-		if(is_null($price))$price = $line->subprice;
-		if(is_null($remise_percent))$remise_percent = $line->remise_percent;
-		if(is_null($pa_ht))$pa_ht = $line->pa_ht;
+		$qty = $line->qty;
+		$price = $line->subprice;
+		$remise_percent = $line->remise_percent;
+		$pa_ht = $line->pa_ht;
 		if(empty($remise_percent)) $remise_percent = 0;
-		if(is_null($situation_cycle_ref))$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
+		$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
         $marginInfos = getMarginInfos($price, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->fk_fournprice, $pa_ht);
         $line->marge_tx = $marginInfos[1];
         $line->marque_tx = $marginInfos[2];

@@ -5,6 +5,7 @@
 
 ## 3.2
 
+- FIX: Retrait de certaines conditions sur des variables indéfinies, warning dans la log - Compat php8 - *12/07/2022* - 3.2.1
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *10/05/2022* 3.2.0
 
 ## 3.1

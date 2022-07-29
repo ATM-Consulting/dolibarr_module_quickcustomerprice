@@ -185,7 +185,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
         }
 		elseif ($objectelement == "FactureFournisseur")
         {
-            $res = $o->updateline($lineid, $line->desc, $price, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $qty, $line->fk_product, 'HT', $line->info_bits, $line->product_type, $remise_percent, false, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $line->multicurrency_subprice, $line->ref_supplier);
+            $res = $o->updateline($lineid, $line->description, $price, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $qty, $line->fk_product, 'HT', $line->info_bits, $line->product_type, $remise_percent, false, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $line->multicurrency_subprice, $line->ref_supplier);
             $line = new SupplierInvoiceLine($db);
             $line->fetch($lineid);
 

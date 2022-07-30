@@ -10,6 +10,7 @@
 
 ## 3.1
 
+- FIX: When you modify a supplier invoice line value the description of the modified line is erased. - *30/07/2022* - 3.1.7
 - FIX: change family name - *02/06/2022* - 3.1.6
 - FIX: Compatibility V16 : newToken - *02/06/2022* - 3.1.5
 - FIX: save for wrong line - *2022-03-29* - 3.1.4

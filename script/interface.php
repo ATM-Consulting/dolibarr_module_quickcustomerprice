@@ -44,8 +44,6 @@
 function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	global $db,$conf, $langs, $user, $hookmanager;
 	$error=0;
-	if($column == 'remise_percent') ${$column} = price2num(floatval($value));
-	else ${$column} = price2num($value);
 
 	$Tab = array();
 	if ($objectelement == "order_supplier") $objectelement = "CommandeFournisseur";

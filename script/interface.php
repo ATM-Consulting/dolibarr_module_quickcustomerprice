@@ -15,6 +15,7 @@
 	$objectid = GETPOST('objectid');
 	$objectelement = GETPOST('objectelement');
 	$lineid = GETPOST('lineid');
+	$lineid = abs((int)filter_var($lineid, FILTER_SANITIZE_NUMBER_INT)); // in some dolibarr version $lineid recieve a string with id in ex: extrafield edition)
 	$lineclass = GETPOST('lineclass');
 	$type = GETPOST('type');
 	$value = GETPOST('value');

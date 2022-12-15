@@ -301,8 +301,13 @@ function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 	$line->fetch($lineid);
 	$line->fetch_optionals();
 	$extrafields->fetch_name_optionals_label($line->element);
-	return $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield])
-		.'&nbsp;&nbsp;<span class="quickSaveExtra" style="cursor:pointer;" type="'.$extrafields->attribute_type[$code_extrafield].'" extracode="'.$code_extrafield.'" lineid="'.$lineid.'" lineclass="'.$lineclass.'"><i class="fa fa-check" aria-hidden="true"></i></span>';
+	if (floatval(DOL_VERSION) >= 17) $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield], '', '', '', '', 0, $line->element);
+	else $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield]);
+	if (floatval(DOL_VERSION) >= 17) $type = $extrafields->attributes[$line->element]['type'][$code_extrafield];
+	else $type = $extrafields->attribute_type[$code_extrafield];
+
+	return $showInputField
+		.'&nbsp;&nbsp;<span class="quickSaveExtra" style="cursor:pointer;" type="'.$type.'" extracode="'.$code_extrafield.'" lineid="'.$lineid.'" lineclass="'.$lineclass.'"><i class="fa fa-check" aria-hidden="true"></i></span>';
 
 }
 
@@ -313,14 +318,15 @@ function _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value) {
 	$line->fetch_optionals();
 	$extrafields = new ExtraFields($db);
 	$extrafields->fetch_name_optionals_label($line->element);
-
-	if(($extrafields->attribute_type[$code_extrafield] == 'datetime' || $extrafields->attribute_type[$code_extrafield] == 'date') && !empty($value)) $value = (int) $value;
+	if (floatval(DOL_VERSION) >= 17) $type = $extrafields->attributes[$line->element]['type'][$code_extrafield];
+	else $type = $extrafields->attribute_type[$code_extrafield];
+	if(($type == 'datetime' || $type == 'date') && !empty($value)) $value = (int) $value;
 
 	if(is_array($value)) $value = implode(',', $value);
 	$line->array_options['options_' . $code_extrafield] = $value;
 	if($lineclass !== "OrderLine") $line->update();
 	else $line->update($user);
-
-	return $extrafields->showOutputField($code_extrafield, $line->array_options['options_' . $code_extrafield]);
+	if (floatval(DOL_VERSION) >= 17) return $extrafields->showOutputField($code_extrafield, $line->array_options['options_'.$code_extrafield], '', $line->element);
+	else return $extrafields->showOutputField($code_extrafield, $line->array_options['options_' . $code_extrafield]);
 
 }

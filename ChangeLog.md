@@ -5,6 +5,7 @@
 
 ## 3.2
 
+- FIX : Compat V17 : gestion des extrafields - *15/12/2022* - 3.2.5
 - FIX : Extrafields updates : `interface.php` has sql errors (invisible to user) due to number parsing - *05/10/2022* - 3.2.4
 - FIX : interpolation de variable dans l'ajax supprimé et mise à jour impossible - *12/09/2022* - 3.2.3
 - FIX : Icon - *09/08/2022* - 3.2.2

@@ -61,7 +61,7 @@ class modquickcustomerprice extends DolibarrModules
 		$this->description = "Description of module quickcustomerprice";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-		$this->version = '3.2.4';
+		$this->version = '3.2.5';
 
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';

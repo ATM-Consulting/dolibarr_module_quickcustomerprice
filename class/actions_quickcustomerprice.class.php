@@ -324,11 +324,16 @@ class Actionsquickcustomerprice
 						let TClassExtra = spanToEdit.attr('class').split('_');
                         for (let i=0; i<TClassExtra.length; i++) {
                             if(i==0 || i==1) continue;
-
                             else if(i ==2 && TClassExtra[2] != 'extras' || i==3 && TClassExtra[2] == 'extras') extrafieldCode = TClassExtra[i];
                             else if( i== 2) continue;
                             else extrafieldCode += '_'+TClassExtra[i];
                         }
+                        <?php if (floatval(DOL_VERSION) >= 17) { ?>
+                            if(extrafieldCode.indexOf(' ') >= 0) {// Si on a des espaces
+                                let TCode = extrafieldCode.split(' ');
+                                extrafieldCode = TCode[0];
+                            }
+                        <?php } ?>
 
 						let lineid = $(this).attr('lineid');
 						let objectelement = $(this).attr('objectelement');

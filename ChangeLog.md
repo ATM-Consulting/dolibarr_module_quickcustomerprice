@@ -1,7 +1,7 @@
 # Change Log for Quick Customer Price
 
 ## Unreleased
-
+- NEW : Add spanish translation - *07/03/2023*
 
 ## 3.2
 

@@ -1,0 +1,11 @@
+Module104874Name = Edición rápida de líneas
+Module104874Desc = Permite la modificación rápida de precio, cantidad y descuento de una factura, órden o presupuesto
+
+ATMAbout = Este módulo se ha desarrolado por <a href="http://www.atm-consulting.fr" target="_blank">ATM Consulting</a><br>Puedes encontrar la documentación en la <a href="http://wiki.atm-consulting.fr/index.php/Accueil" target="_blank">wiki</a><br><br>Para cualquier pregunta o sugerencia, contáctanos en <a href="mailto:support@atm-consulting.fr">support@atm-consulting.fr</a><br><br>Para cualquier pregunta comercial, contáctanos en <a href="mailto:contact@atm-consulting.fr">contact@atm-consulting.fr</a> o en el teléfono +33 9 77 19 50 70<br><br>Encuentra otros módulos en <a href="http://www.dolistore.com/search.php?orderby=position&orderway=desc&search_query=atm&submit_search=Rechercher" target="_blank">Dolistore</a>
+
+
+quickcustomerpriceSetup = Configuración del módulo Edición rápida de líneas
+quickcustomerpriceAbout = Sobre el módulo
+
+QCP_ALLOW_CHANGE_ON_VALIDATE=Autorizar la modificación de un elemento ya validado
+QCP_ENABLE_SUPPLIER_PART=Activar en los documentos de proveedores

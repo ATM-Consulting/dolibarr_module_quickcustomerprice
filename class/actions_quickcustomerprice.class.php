@@ -373,12 +373,18 @@ class Actionsquickcustomerprice
                             || type == 'mail'
                             || type == 'phone'
                             || type == 'url'
-							|| type == 'password'
-							|| type == 'link') {
+							|| type == 'password') {
 
 							let siblings = $(this).siblings('input');
                             value = $(siblings[0]).val();
+
 						}
+
+						if (type == 'link') {
+							siblings = $(this).siblings('select');
+							value = $(siblings[0]).val();
+						}
+
 						//Wysiwyg
 						if(type == 'text') {
                             elem = $(this).siblings('div')[0];

@@ -303,6 +303,7 @@ function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 	$extrafields->fetch_name_optionals_label($line->element);
 	if (floatval(DOL_VERSION) >= 17) $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield], '', '', '', '', 0, $line->element);
 	else $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield]);
+
 	if (floatval(DOL_VERSION) >= 17) $type = $extrafields->attributes[$line->element]['type'][$code_extrafield];
 	else $type = $extrafields->attribute_type[$code_extrafield];
 

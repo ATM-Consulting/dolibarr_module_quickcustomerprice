@@ -4,6 +4,7 @@
 
 
 ## 3.2
+- FIX : DA023507 - Handle multiple class on element - *16/06/2023* - 3.2.7
 - FIX : Update interface.php for bad value selection on link extrafields - *03/05/2023* - 3.2.6
 - FIX : Compat V17 : gestion des extrafields - *15/12/2022* - 3.2.5
 - FIX : Extrafields updates : `interface.php` has sql errors (invisible to user) due to number parsing - *05/10/2022* - 3.2.4

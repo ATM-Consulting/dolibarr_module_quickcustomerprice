@@ -110,18 +110,26 @@ class Actionsquickcustomerprice
 							});
 						}
 
-						var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('Qty') ?>)').prevAll('td').length ;
-						if(nb_col>0) {
-							$('table#tablelines tr[id]').each(function(i,item) {
-								$(item).find('td').eq(nb_col).addClass('linecolqty');
-							});
-						}
+					var nb_col_price_uht_currency = $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('PriceUHTCurrency') ?>)').prevAll('td').length;
 
-						var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('ReductionShort') ?>)').prevAll('td').length ;
-						if(nb_col>0) {
-							$('table#tablelines tr[id]').each(function(i,item) {
-								$(item).find('td').eq(nb_col).addClass('linecoldiscount');
-							});
+					if (nb_col_price_uht_currency > 0) {
+						$('table#tablelines tr[id]').each(function(i, item) {
+							$(item).find('td').eq(nb_col_price_uht_currency).addClass('linecoluht_currency');
+						});
+					}
+
+					var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('Qty') ?>)').prevAll('td').length ;
+					if(nb_col>0) {
+						$('table#tablelines tr[id]').each(function(i,item) {
+							$(item).find('td').eq(nb_col).addClass('linecolqty');
+						});
+					}
+
+					var nb_col= $('table#tablelines tr.liste_titre').first().find('td:contains(<?php echo $langs->transnoentities('ReductionShort') ?>)').prevAll('td').length ;
+					if(nb_col>0) {
+						$('table#tablelines tr[id]').each(function(i,item) {
+							$(item).find('td').eq(nb_col).addClass('linecoldiscount');
+						});
 
 
 							<?php
@@ -131,14 +139,20 @@ class Actionsquickcustomerprice
 								if (! empty($conf->global->DISPLAY_MARGIN_RATES) && $user->rights->margins->liretous) $moreColForTotal++;
 								if (! empty($conf->global->DISPLAY_MARK_RATES) && $user->rights->margins->liretous) $moreColForTotal++;
 
-							?>
-							if(nb_col>0) {
-								$('table#tablelines tr[id]').each(function(i,item) {
-									$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('linecolht');
-								});
-							}
+						?>
+						if(nb_col>0) {
+							$('table#tablelines tr[id]').each(function(i,item) {
+								$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('linecolht');
+							});
 						}
-						<?php
+
+						if(nb_col>0) {
+							$('table#tablelines tr[id]').each(function(i,item) {
+								$(item).find('td').eq(nb_col+<?php echo $moreColForTotal ?>).addClass('linecolutotalht_currency');
+							});
+						}
+					}
+					<?php
 
 
 		  			}
@@ -173,19 +187,21 @@ class Actionsquickcustomerprice
 
 						if(TIDLinesToChange.indexOf(lineid) == -1) return;
 
-			  			if($(item).hasClass('linecoldiscount')) {
-			  				col='remise_percent';
-			  			}
-			  			else if($(item).hasClass('linecolqty')) {
-			  				col='qty';
-			  			} else if ($(item).hasClass('linecolmargin1')) {
-                            col = 'pa_ht';
-                        } else if ($(item).hasClass('linecolcycleref')) {
-                            col = 'situation_cycle_ref';
-                        }
-			  			else {
-			  				col = 'price';
-			  			}
+						if($(item).hasClass('linecoldiscount')) {
+							col='remise_percent';
+						}
+						else if($(item).hasClass('linecolqty')) {
+							col='qty';
+						} else if ($(item).hasClass('linecolmargin1')) {
+							col = 'pa_ht';
+						} else if ($(item).hasClass('linecolcycleref')) {
+							col = 'situation_cycle_ref';
+						} else if ($(item).hasClass('linecoluht_currency')) {
+							col = 'pu_ht_devise';
+						}
+						else {
+							col = 'price';
+						}
 
 			  			$a = $('<a class="blue" style="text-decoration:underline;cursor:text;" />');
 			  			$a.attr('href', "javascript:;");
@@ -249,12 +265,16 @@ class Actionsquickcustomerprice
 			  					}).done(function(data) {
 			  						if(data.error == null){
 										$('tr[id=row-'+lineid+'] td.linecolht').html(data.total_ht);
+										$('tr[id=row-'+lineid+'] td.linecolutotalht_currency').html(data.multicurrency_total_ht);
 										$('tr[id=row-'+lineid+'] td.linecoldiscount a').html((data.remise_percent == 0 || data.remise_percent == '') ? '&nbsp;' : data.remise_percent+'%');
+										$('tr[id=row-'+lineid+'] td.linecoluht_currency a').html(data.pu_ht_devise);
+										$('tr[id=row-'+lineid+'] td.linecoluht_currency a').attr('value',data.pu_ht_devise);
 										$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
 										$('tr[id=row-'+lineid+'] td.linecolmargin1 a').html(data.pa_ht);
 										$('tr[id=row-'+lineid+'] td.linecolmargin2:first').html(data.marge_tx);
 										$('tr[id=row-'+lineid+'] td.linecolmargin2:eq(1)').html(data.marque_tx);
 										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
+										$('tr[id=row-'+lineid+'] td.linecoluht a').attr('value',data.price);
 										$('tr[id=row-'+lineid+'] td.linecolcycleref a').html(data.situation_cycle_ref+'%');
 										<?php if( (float)DOL_VERSION>3.8 ) { ?>
 										  $('tr[id=row-'+lineid+'] td.linecoluttc').html(data.uttc);

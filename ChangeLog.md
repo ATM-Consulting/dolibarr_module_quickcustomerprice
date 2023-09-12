@@ -1,6 +1,7 @@
 # Change Log for Quick Customer Price
 
 ## Unreleased
+- NEW : Allow on-the-fly editing of net P.U (currency) on quote, order and invoice lines (customer and supplier sides) - *11/03/2023*
 - NEW : Add spanish translation - *07/03/2023*
 
 ## 3.2

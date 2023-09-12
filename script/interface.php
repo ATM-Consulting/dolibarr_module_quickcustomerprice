@@ -71,6 +71,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		$qty = $line->qty;
 		$price = $line->subprice;
 		$remise_percent = $line->remise_percent;
+		$pu_ht_devise = $line->pu_ht_devise;
 		$pa_ht = $line->pa_ht;
         if(empty($remise_percent)) $remise_percent = 0;
 		$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
@@ -110,10 +111,15 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
                 if($remise_percent === 'Offert') $remise_percent = 100;
                 if(strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
 
+				if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
+				elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
+				else $pu_ht_devise = $line->multicurrency_subprice;
+
 				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx
 					, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
-					, $line->array_options, $situation_cycle_ref, $line->fk_unit);
+					, $line->array_options, $situation_cycle_ref, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;
+				$multicurrency_total_ht = $o->line->multicurrency_total_ht;
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
 		}
@@ -142,10 +148,15 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			}
 			if (empty($error))
 			{
+				if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
+				elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
+				else $pu_ht_devise = $line->multicurrency_subprice;
+
 				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits
 					, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
-					, $line->array_options, $line->fk_unit);
+					, $line->array_options, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;
+				$multicurrency_total_ht = $o->line->multicurrency_total_ht;
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
 		}
@@ -173,38 +184,56 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				}
 			}
 			if(empty($error)){
+				if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
+				elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
+				else $pu_ht_devise = $line->multicurrency_subprice;
+
 				$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code
-					, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+					, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;
+				$multicurrency_total_ht = $o->line->multicurrency_total_ht;
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
 		}
 		else if ($objectelement == "CommandeFournisseur")
-        {
-        	if(isset($price) && intval($price) === 0) $line->multicurrency_subprice = 0;
-            $res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, 0, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $line->multicurrency_subprice, $line->ref_supplier);
-            $total_ht = $o->line->total_ht;
-            $uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
-        }
+		{
+			if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
+			elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
+			else $pu_ht_devise = $line->multicurrency_subprice;
+
+			$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, 0, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise, $line->ref_supplier);
+			$total_ht = $o->line->total_ht;
+			$multicurrency_total_ht = $o->line->multicurrency_total_ht;
+			$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
+		}
 		elseif ($objectelement == "FactureFournisseur")
-        {
-            $lineDesc = !empty($line->description) ? $line->description : $line->desc; // for compatibility Dolibarr V14 and above
-            $res = $o->updateline($lineid, $lineDesc, $price, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $qty, $line->fk_product, 'HT', $line->info_bits, $line->product_type, $remise_percent, false, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $line->multicurrency_subprice, $line->ref_supplier);
-            $line = new SupplierInvoiceLine($db);
-            $line->fetch($lineid);
+		{
+			if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
+			elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
+			else $pu_ht_devise = $line->multicurrency_subprice;
 
-            $total_ht = $line->total_ht;
-            $uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
-        }
+			$lineDesc = !empty($line->description) ? $line->description : $line->desc; // for compatibility Dolibarr V14 and above
+			$res = $o->updateline($lineid, $lineDesc, $price, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $qty, $line->fk_product, 'HT', $line->info_bits, $line->product_type, $remise_percent, false, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise, $line->ref_supplier);
+			$line = new SupplierInvoiceLine($db);
+			$line->fetch($lineid);
+
+			$total_ht = $line->total_ht;
+			$multicurrency_total_ht = $line->multicurrency_total_ht;
+			$uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
+		}
 		elseif ($objectelement == "SupplierProposal")
-        {
-            $res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc);
-            $line = new SupplierProposalLine($db);
-            $line->fetch($lineid);
+		{
+			if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
+			elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
+			else $pu_ht_devise = $line->multicurrency_subprice;
+			$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, $pu_ht_devise= $pu_ht_devise);
+			$line = new SupplierProposalLine($db);
+			$line->fetch($lineid);
 
-            $total_ht = $line->total_ht;
-            $uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
-        }
+			$total_ht = $line->total_ht;
+			$multicurrency_total_ht = $line->multicurrency_total_ht;
+			$uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
+		}
 
 		if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
 		{
@@ -235,15 +264,17 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		if($res>=0) {
 
 			$Tab=array(
-				'total_ht'=>price($total_ht)
-		        ,'qty'=>$qty
-		        ,'pa_ht'=>price($pa_ht)
-		        ,'marge_tx'=>price($line->marge_tx,2).' %'
-		        ,'marque_tx'=>price($line->marque_tx,2).' %'
-		        ,'price'=>price($price)
-			    ,'situation_cycle_ref'=>$situation_cycle_ref
-		        ,'remise_percent'=>$remise_percent
-		        ,'uttc'=>$uttc
+			'total_ht'=>price($total_ht)
+			,'multicurrency_total_ht'=>price($multicurrency_total_ht)
+			,'qty'=>$qty
+			,'pa_ht'=>price($pa_ht)
+			,'marge_tx'=>price($line->marge_tx,2).' %'
+			,'marque_tx'=>price($line->marque_tx,2).' %'
+			,'price'=>price($price)
+			,'situation_cycle_ref'=>$situation_cycle_ref
+			,'remise_percent'=>$remise_percent
+			,'uttc'=>price($uttc)
+			,'pu_ht_devise'=>price($pu_ht_devise)
 			);
 
 

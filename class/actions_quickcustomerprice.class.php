@@ -322,8 +322,11 @@ class Actionsquickcustomerprice
                         <?php }?>
                         if(spanToEdit.length == 0) spanToEdit = extraTd;
                         let TClassExtra = spanToEdit.attr('class').split(' ');
-						TClassExtra = TClassExtra[0].split('_');
-                        for (let i=0; i<TClassExtra.length; i++) {
+						for (let i=0; i<TClassExtra.length; i++) {
+							if (TClassExtra[i].includes('extras')) TClassExtra = TClassExtra[i].split('_');
+						}
+
+						for (let i=0; i<TClassExtra.length; i++) {
                             if(i==0 || i==1) continue;
                             else if(i ==2 && TClassExtra[2] != 'extras' || i==3 && TClassExtra[2] == 'extras') extrafieldCode = TClassExtra[i];
                             else if( i== 2) continue;

@@ -306,13 +306,26 @@ class Actionsquickcustomerprice
 
 			  		});
 
-			  		/*
-			  		 * Extrafields
-			  		 */
+					/*
+					 * Extrafields
+					 */
 					//Ajout du picto
+					var elements = $("#tablelines").find('[id*=\'extras\']');
 
-                    $('#tablelines').find('[id*=\'extras\']').each(function () {
+					<?php
+					$reshook = $hookmanager->executeHooks('excludePictoForElements', $parameters, $object, $action);
+					if ($reshook > 0 && is_array($hookmanager->resArray) && !empty($hookmanager->resArray)){
+						?> var excludedElements =  <?php echo json_encode($hookmanager->resArray); ?>;
+						elements = elements.not(function () {
+							var elementID = $(this).attr("id");
+							return excludedElements.some(function (word) {
+								return elementID.includes(word);
+							});
+						});
+					<?php
+					}?>
 
+					elements.each(function () {
 						let lineid = $(this).closest('tr').attr('id').substr(4);
 
 						$a = $('<a class="blue quick-edit-extras" style="cursor:pointer;" />');
@@ -343,8 +356,11 @@ class Actionsquickcustomerprice
                         <?php }?>
                         if(spanToEdit.length == 0) spanToEdit = extraTd;
                         let TClassExtra = spanToEdit.attr('class').split(' ');
-						TClassExtra = TClassExtra[0].split('_');
-                        for (let i=0; i<TClassExtra.length; i++) {
+						for (let i=0; i<TClassExtra.length; i++) {
+							if (TClassExtra[i].includes('extras')) TClassExtra = TClassExtra[i].split('_');
+						}
+
+						for (let i=0; i<TClassExtra.length; i++) {
                             if(i==0 || i==1) continue;
                             else if(i ==2 && TClassExtra[2] != 'extras' || i==3 && TClassExtra[2] == 'extras') extrafieldCode = TClassExtra[i];
                             else if( i== 2) continue;

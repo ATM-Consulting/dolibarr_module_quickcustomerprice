@@ -1,10 +1,12 @@
 # Change Log for Quick Customer Price
 
 ## Unreleased
+- NEW : Add hook to delete pen for some extrafields - *19/09/2023* - 3.3
 - NEW : Allow on-the-fly editing of net P.U (currency) on quote, order and invoice lines (customer and supplier sides) - *11/03/2023*
 - NEW : Add spanish translation - *07/03/2023*
 
 ## 3.2
+- FIX : DA023886 - pen for edition doesn't work - *18/09/2023* - 3.2.8
 - FIX : DA023507 - Handle multiple class on element - *16/06/2023* - 3.2.7
 - FIX : Update interface.php for bad value selection on link extrafields - *03/05/2023* - 3.2.6
 - FIX : Compat V17 : gestion des extrafields - *15/12/2022* - 3.2.5

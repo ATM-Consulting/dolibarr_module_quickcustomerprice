@@ -1,6 +1,7 @@
 # Change Log for Quick Customer Price
 
 ## Unreleased
+- NEW : Add hook to delete pen for some extrafields - *19/09/2023* - 3.3
 
 
 ## 3.2

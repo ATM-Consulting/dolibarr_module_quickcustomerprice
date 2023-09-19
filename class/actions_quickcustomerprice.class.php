@@ -285,13 +285,26 @@ class Actionsquickcustomerprice
 
 			  		});
 
-			  		/*
-			  		 * Extrafields
-			  		 */
+					/*
+					 * Extrafields
+					 */
 					//Ajout du picto
+					var elements = $("#tablelines").find('[id*=\'extras\']');
 
-                    $('#tablelines').find('[id*=\'extras\']').each(function () {
+					<?php
+					$reshook = $hookmanager->executeHooks('excludePictoForElements', $parameters, $object, $action);
+					if ($reshook > 0 && is_array($hookmanager->resArray) && !empty($hookmanager->resArray)){
+						?> var excludedElements =  <?php echo json_encode($hookmanager->resArray); ?>;
+						elements = elements.not(function () {
+							var elementID = $(this).attr("id");
+							return excludedElements.some(function (word) {
+								return elementID.includes(word);
+							});
+						});
+					<?php
+					}?>
 
+					elements.each(function () {
 						let lineid = $(this).closest('tr').attr('id').substr(4);
 
 						$a = $('<a class="blue quick-edit-extras" style="cursor:pointer;" />');

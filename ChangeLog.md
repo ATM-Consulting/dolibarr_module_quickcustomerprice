@@ -1,9 +1,12 @@
 # Change Log for Quick Customer Price
 
 ## Unreleased
-- NEW : Add hook to delete pen for some extrafields - *19/09/2023* - 3.3
-- NEW : Allow on-the-fly editing of net P.U (currency) on quote, order and invoice lines (customer and supplier sides) - *11/03/2023*
-- NEW : Add spanish translation - *07/03/2023*
+
+
+## 3.5
+- NEW : Add hook to delete pen for some extrafields - *19/09/2023* - 3.5.0
+- NEW : Allow on-the-fly editing of net P.U (currency) on quote, order and invoice lines (customer and supplier sides) - *11/03/2023* - 3.4.0
+- NEW : Add spanish translation - *07/03/2023* - 3.3.0
 
 ## 3.2
 - FIX : DA023886 - pen for edition doesn't work - *18/09/2023* - 3.2.8

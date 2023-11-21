@@ -49,6 +49,7 @@ function quickcustomerpriceAdminPrepareHead()
     //$this->tabs = array(
     //	'entity:-tabname:Title:@quickcustomerprice:/quickcustomerprice/mypage.php?id=__ID__'
     //); // to remove a tab
+	$object = new stdClass;
     complete_head_from_modules($conf, $langs, $object, $head, $h, 'quickcustomerprice');
 
     return $head;

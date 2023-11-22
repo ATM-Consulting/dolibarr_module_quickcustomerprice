@@ -2,9 +2,9 @@
 
 ## Unreleased
 
+- FIX : compat v19 - *21/11/2023* - 3.6.0
 
 ## 3.5
-- FIX : compat v19 - *21/11/2023* - 3.5.1
 - NEW : Add hook to delete pen for some extrafields - *19/09/2023* - 3.5.0
 - NEW : Allow on-the-fly editing of net P.U (currency) on quote, order and invoice lines (customer and supplier sides) - *11/03/2023* - 3.4.0
 - NEW : Add spanish translation - *07/03/2023* - 3.3.0

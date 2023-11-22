@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- FIX : compat v19 - *21/11/2023* - 3.6.0
 
 ## 3.5
 - NEW : Add hook to delete pen for some extrafields - *19/09/2023* - 3.5.0

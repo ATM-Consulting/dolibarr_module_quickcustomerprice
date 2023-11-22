@@ -54,8 +54,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 	$o=new $objectelement($db);
 	$o->fetch($objectid);
 
-	if(!empty($conf->global->QCP_ALLOW_CHANGE_ON_VALIDATE)) {
-		$o->brouillon=1;
+	if(getDolGlobalString('QCP_ALLOW_CHANGE_ON_VALIDATE')) {
 		$o->statut = $objectelement::STATUS_DRAFT;
 	}
 
@@ -71,49 +70,31 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		$qty = $line->qty;
 		$price = $line->subprice;
 		$remise_percent = $line->remise_percent;
-		$pu_ht_devise = $line->pu_ht_devise;
+		if(!empty($line->pu_ht_devise)) $pu_ht_devise = $line->pu_ht_devise;
 		$pa_ht = $line->pa_ht;
         if(empty($remise_percent)) $remise_percent = 0;
 		$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
 
         if($column == 'remise_percent') ${$column} = price2num(floatval($value));
         else ${$column} = price2num($value);
-
+		if(empty($line->fk_fournprice)) $line->fk_fournprice = 0;
         $marginInfos = getMarginInfos($price, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->fk_fournprice, $pa_ht);
         $line->marge_tx = $marginInfos[1];
         $line->marque_tx = $marginInfos[2];
 
 		if ($objectelement == 'facture')
 		{
+			//TODO Refacto
 			if (!empty($line->fk_product))
 			{
-				$product = new Product($db);
-				$res = $product->fetch($line->fk_product);
-
-				$type = $product->type;
-
-				$price_min = $product->price_min;
-				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
-					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
-
-				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
-
-				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) ) && ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min))))
-				{
-					$langs->load('products');
-					$res = -1;
-					$o->error = $langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
-					$error ++;
-				}
+				$error = checkPriceMin($line, $price);
 			}
 			if (empty($error))
 			{
                 if($remise_percent === 'Offert') $remise_percent = 100;
                 if(strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
 
-				if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
-				elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
-				else $pu_ht_devise = $line->multicurrency_subprice;
+				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx
 					, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
@@ -127,30 +108,11 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		{
 			if (!empty($line->fk_product))
 			{
-				$product = new Product($db);
-				$res = $product->fetch($line->fk_product);
-
-				$type = $product->type;
-
-				$price_min = $product->price_min;
-				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
-					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
-
-				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
-
-				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) )&& ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min))))
-				{
-					$langs->load('products');
-					$res = -1;
-					$o->error = $langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
-					$error ++;
-				}
+				$error = checkPriceMin($line, $price);
 			}
 			if (empty($error))
 			{
-				if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
-				elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
-				else $pu_ht_devise = $line->multicurrency_subprice;
+				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits
 					, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
@@ -164,29 +126,11 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		{ // Propal
 			if (!empty($line->fk_product))
 			{
-				$product = new Product($db);
-				$res = $product->fetch($line->fk_product);
-
-				$type = $product->type;
-
-				$price_min = $product->price_min;
-				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
-					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
-
-				$label = ((GETPOST('update_label') && GETPOST('product_label')) ? GETPOST('product_label') : '');
-
-				if (((!empty($conf->global->MAIN_USE_ADVANCED_PERMS) && empty($user->rights->produit->ignore_price_min_advance)) || empty($conf->global->MAIN_USE_ADVANCED_PERMS) )&& ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min))))
-				{
-					$langs->load('products');
-					$res = -1;
-					$o->error =$langs->trans("CantBeLessThanMinPrice", price(price2num($price_min, 'MU'), 0, $langs, 0, 0, - 1, $conf->currency));
-					$error ++;
-				}
+				$error = checkPriceMin($line, $price);
 			}
 			if(empty($error)){
-				if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
-				elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
-				else $pu_ht_devise = $line->multicurrency_subprice;
+				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
+
 
 				$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code
 					, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise);
@@ -197,9 +141,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		}
 		else if ($objectelement == "CommandeFournisseur")
 		{
-			if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
-			elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
-			else $pu_ht_devise = $line->multicurrency_subprice;
+			handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 			$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, 0, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise, $line->ref_supplier);
 			$total_ht = $o->line->total_ht;
@@ -208,9 +150,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		}
 		elseif ($objectelement == "FactureFournisseur")
 		{
-			if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
-			elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
-			else $pu_ht_devise = $line->multicurrency_subprice;
+			handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 			$lineDesc = !empty($line->description) ? $line->description : $line->desc; // for compatibility Dolibarr V14 and above
 			$res = $o->updateline($lineid, $lineDesc, $price, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $qty, $line->fk_product, 'HT', $line->info_bits, $line->product_type, $remise_percent, false, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise, $line->ref_supplier);
@@ -223,10 +163,10 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 		}
 		elseif ($objectelement == "SupplierProposal")
 		{
-			if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
-			elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price =  $pu_ht_devise / $o->multicurrency_tx;
-			else $pu_ht_devise = $line->multicurrency_subprice;
-			$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, $pu_ht_devise= $pu_ht_devise);
+
+			handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
+
+			$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', 0, 0, 0, 0, 0, 0, '', 0, 0, '', '', $pu_ht_devise);
 			$line = new SupplierProposalLine($db);
 			$line->fetch($lineid);
 
@@ -235,16 +175,16 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			$uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
 		}
 
-		if (empty($conf->global->MAIN_DISABLE_PDF_AUTOUPDATE))
+		if (!getDolGlobalString('MAIN_DISABLE_PDF_AUTOUPDATE'))
 		{
-			$hidedetails = (GETPOST('hidedetails', 'int') ? GETPOST('hidedetails', 'int') : (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0));
-			$hidedesc = (GETPOST('hidedesc', 'int') ? GETPOST('hidedesc', 'int') : (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0));
-			$hideref = (GETPOST('hideref', 'int') ? GETPOST('hideref', 'int') : (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0));
+			$hidedetails = (GETPOST('hidedetails', 'int') ? GETPOST('hidedetails', 'int') : (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS') ? 1 : 0));
+			$hidedesc = (GETPOST('hidedesc', 'int') ? GETPOST('hidedesc', 'int') : (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DESC') ? 1 : 0));
+			$hideref = (GETPOST('hideref', 'int') ? GETPOST('hideref', 'int') : (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_REF') ? 1 : 0));
 
 			// Define output language
 			$outputlangs = $langs;
 			$newlang = GETPOST('lang_id', 'alpha');
-			if (! empty($conf->global->MAIN_MULTILANGS) && empty($newlang))
+			if (getDolGlobalString('MAIN_MULTILANGS') && empty($newlang))
 				$newlang = !empty($o->client) ? $o->client->default_lang : $o->thirdparty->default_lang;
 			if (! empty($newlang)) {
 				$outputlangs = new Translate("", $conf);
@@ -262,7 +202,8 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 
 
 		if($res>=0) {
-
+			if(empty($line->marge_tx)) $line->marge_tx = 0;
+			if(empty($line->marque_tx)) $line->marque_tx = 0;
 			$Tab=array(
 			'total_ht'=>price($total_ht)
 			,'multicurrency_total_ht'=>price($multicurrency_total_ht)
@@ -316,6 +257,47 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 
 	return $Tab;
 
+}
+
+/**
+ * @param CommonObject     $o
+ * @param CommonObjectLine $line
+ * @param float|null       $price
+ * @param float|null       $pu_ht_devise
+ * @return void
+ */
+function handleMulticurrencyPrices(CommonObject $o, CommonObjectLine $line, ?float &$price, ?float &$pu_ht_devise): void {
+	if(is_null($pu_ht_devise)) $pu_ht_devise = 0;
+	if(!isset($line->pu_ht_devise)) $line->pu_ht_devise = 0;
+	if(is_null($price)) $price = 0;
+	if(price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
+	else if(price($pu_ht_devise) != price($line->pu_ht_devise)) $price = $pu_ht_devise / $o->multicurrency_tx;
+	else $pu_ht_devise = $line->multicurrency_subprice;
+}
+
+/**
+ * @param CommonObjectLine $line
+ * @param float $price
+ * @return int return > 0 if error
+ */
+function checkPriceMin(CommonObjectLine $line, float $price) : int {
+	global $langs, $db, $user, $conf;
+
+	$error = 0;
+
+	$product = new Product($db);
+	$product->fetch($line->fk_product);
+
+	$price_min = $product->price_min;
+	if(getDolGlobalString('PRODUIT_MULTIPRICES') && ! empty($o->thirdparty->price_level)) $price_min = $product->multiprices_min [$o->thirdparty->price_level];
+
+	if(((getDolGlobalString('MAIN_USE_ADVANCED_PERMS') && ! $user->hasRight('produit', 'ignore_price_min_advance')) || ! getDolGlobalString('MAIN_USE_ADVANCED_PERMS')) && ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min)))) {
+		$langs->load('products');
+		$o->error = $langs->trans('CantBeLessThanMinPrice', price(price2num($price_min, 'MU'), 0, $langs, 0, 0, -1, $conf->currency));
+		$error++;
+	}
+
+	return $error;
 }
 
 function _showExtrafield($objectelement, $lineid, $code_extrafield) {

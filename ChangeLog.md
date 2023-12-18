@@ -2,14 +2,18 @@
 
 ## Unreleased
 
+
+
+## Release 3.6
+
 - FIX : compat v19 - *21/11/2023* - 3.6.0
 
-## 3.5
+## Release 3.5
 - NEW : Add hook to delete pen for some extrafields - *19/09/2023* - 3.5.0
 - NEW : Allow on-the-fly editing of net P.U (currency) on quote, order and invoice lines (customer and supplier sides) - *11/03/2023* - 3.4.0
 - NEW : Add spanish translation - *07/03/2023* - 3.3.0
 
-## 3.2
+## Release 3.2
 - FIX : DA023886 - pen for edition doesn't work - *18/09/2023* - 3.2.8
 - FIX : DA023507 - Handle multiple class on element - *16/06/2023* - 3.2.7
 - FIX : Update interface.php for bad value selection on link extrafields - *03/05/2023* - 3.2.6
@@ -20,7 +24,7 @@
 - FIX : Retrait de certaines conditions sur des variables indéfinies, warning dans la log - Compat php8 - *12/07/2022* - 3.2.1
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *10/05/2022* 3.2.0
 
-## 3.1
+## Release 3.1
 
 - FIX: When you modify a supplier invoice line value the description of the modified line is erased. - *30/07/2022* - 3.1.7
 - FIX: change family name - *02/06/2022* - 3.1.6

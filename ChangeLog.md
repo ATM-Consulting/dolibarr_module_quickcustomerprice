@@ -6,6 +6,7 @@
 
 ## Release 3.6
 
+- FIX : warning - *29/02/2024* - 3.6.1
 - FIX : compat v19 - *21/11/2023* - 3.6.0
 
 ## Release 3.5

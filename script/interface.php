@@ -185,7 +185,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			$outputlangs = $langs;
 			$newlang = GETPOST('lang_id', 'alpha');
 			if (getDolGlobalString('MAIN_MULTILANGS') && empty($newlang))
-				$newlang = !empty($o->client) ? $o->client->default_lang : $o->thirdparty->default_lang;
+				$newlang = !empty($o->client) ? $o->client->default_lang ?? $o->thirdparty->default_lang ?? null : $o->thirdparty->default_lang ?? null;
 			if (! empty($newlang)) {
 				$outputlangs = new Translate("", $conf);
 				$outputlangs->setDefaultLang($newlang);
@@ -314,7 +314,7 @@ function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 	$line->fetch($lineid);
 	$line->fetch_optionals();
 	$extrafields->fetch_name_optionals_label($line->element);
-	if (floatval(DOL_VERSION) >= 17) $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield], '', '', '', '', 0, $line->element);
+	if (floatval(DOL_VERSION) >= 17) $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield] ?? null, '', '', '', '', 0, $line->element);
 	else $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_'.$code_extrafield]);
 
 	if (floatval(DOL_VERSION) >= 17) $type = $extrafields->attributes[$line->element]['type'][$code_extrafield];

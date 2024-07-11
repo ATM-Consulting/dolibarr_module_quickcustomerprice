@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-
+- FIX : Compat v20
+  Changed Dolibarr compatibility range to 16 min - 20 max
+  Changed PHP compatibility range to 5.6 min
 
 ## Release 3.6
 

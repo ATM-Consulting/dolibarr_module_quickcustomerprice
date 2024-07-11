@@ -179,7 +179,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                         }
                         if($user->hasRight('quickcustomerprice', 'edit_discount')) $strToFind[] = 'td.linecoldiscount';
                         if(! empty($conf->margin->enabled)) $strToFind[] = 'td.linecolmargin1';
-						if(! empty($conf->multicurrency->enabled)) $strToFind[] = 'td.linecoluht_currency';
+						if(isModEnabled('multicurrency')) $strToFind[] = 'td.linecoluht_currency';
                     ?>
 			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {
 			  			value = $(item).html();

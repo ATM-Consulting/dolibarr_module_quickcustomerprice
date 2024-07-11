@@ -61,7 +61,7 @@ class modquickcustomerprice extends DolibarrModules
 		$this->description = "Modify a value of your product or service with one click";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-		$this->version = '3.6.1';
+		$this->version = '3.7.0';
 
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
@@ -111,7 +111,7 @@ class modquickcustomerprice extends DolibarrModules
 		$this->depends = array();		// List of modules id that must be enabled if this module is enabled
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->conflictwith = array();	// List of modules id this module is in conflict with
-		$this->phpmin = array(5,0);					// Minimum version of PHP required by module
+		$this->phpmin = array(5,6);					// Minimum version of PHP required by module
 		$this->need_dolibarr_version = array(10,0);	// Minimum version of Dolibarr required by module
 		$this->langfiles = array("quickcustomerprice@quickcustomerprice");
 
@@ -149,7 +149,7 @@ class modquickcustomerprice extends DolibarrModules
         $this->tabs = array();
 
         // Dictionaries
-	    if (! isset($conf->quickcustomerprice->enabled))
+	    if (!isModEnabled('quickcustomerprice'))
         {
         	$conf->quickcustomerprice=new stdClass();
         	$conf->quickcustomerprice->enabled=0;

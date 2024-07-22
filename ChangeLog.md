@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-- FIX : Compat v20
+
+
+## Release 3.7
+
+- FIX : Compat v20 - *22/07/2024* - 3.7.0
   Changed Dolibarr compatibility range to 16 min - 20 max
   Changed PHP compatibility range to 5.6 min
 

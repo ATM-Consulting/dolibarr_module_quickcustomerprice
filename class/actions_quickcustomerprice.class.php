@@ -136,7 +136,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 							<?php
 								$moreColForTotal = 1;
 
-								if (! empty($conf->margin->enabled) && empty($user->societe_id)) $moreColForTotal++;
+								if (isModEnabled('margin') && empty($user->societe_id)) $moreColForTotal++;
 								if (getDolGlobalString('DISPLAY_MARGIN_RATES') && $user->hasRight('margins', 'liretous')) $moreColForTotal++;
 								if (getDolGlobalString('DISPLAY_MARK_RATES') && $user->hasRight('margins', 'liretous')) $moreColForTotal++;
 
@@ -178,8 +178,8 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                             $strToFind[] = 'td.linecolqty';
                         }
                         if($user->hasRight('quickcustomerprice', 'edit_discount')) $strToFind[] = 'td.linecoldiscount';
-                        if(! empty($conf->margin->enabled)) $strToFind[] = 'td.linecolmargin1';
-						if(! empty($conf->multicurrency->enabled)) $strToFind[] = 'td.linecoluht_currency';
+                        if(isModEnabled('margin')) $strToFind[] = 'td.linecolmargin1';
+						if(isModEnabled('multicurrency')) $strToFind[] = 'td.linecoluht_currency';
                     ?>
 			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {
 			  			value = $(item).html();

@@ -175,6 +175,12 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			$uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
 		}
 
+		$hookname = '';
+		if($o->element == 'commande') $hookname = 'ordercard';
+		if($o->element == 'propal') $hookname = 'propalcard';
+		if($o->element == 'facture') $hookname = 'invoicecard';
+		$hookmanager->initHooks(array($hookname, 'globalcard'));
+
 		if (!getDolGlobalString('MAIN_DISABLE_PDF_AUTOUPDATE'))
 		{
 			$hidedetails = (GETPOST('hidedetails', 'int') ? GETPOST('hidedetails', 'int') : (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS') ? 1 : 0));
@@ -192,11 +198,6 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			}
 
 			$ret = $o->fetch($o->id); // Reload to get new records
-            $hookname = '';
-            if($o->element == 'commande') $hookname = 'ordercard';
-            if($o->element == 'propal') $hookname = 'propalcard';
-            if($o->element == 'facture') $hookname = 'invoicecard';
-            $hookmanager->initHooks(array($hookname, 'globalcard'));
 			$o->generateDocument($o->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 		}
 

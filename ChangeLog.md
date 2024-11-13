@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## Release 3.8
+
+- NEW : Allow on-the-fly editing of margin rates and mark rates on quote, order and invoice lines - *13/11/2024* - 3.8.0
 
 
 ## Release 3.7

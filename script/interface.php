@@ -75,12 +75,31 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
         if(empty($remise_percent)) $remise_percent = 0;
 		$situation_cycle_ref = empty($line->situation_percent) ? 0 : $line->situation_percent;
 
+
         if($column == 'remise_percent') ${$column} = price2num(floatval($value));
-        else ${$column} = price2num($value);
+        elseif ($column == 'marque_tx'){
+			$price = ((price2num($pa_ht) / (1 - price2num($value) / 100)) / (1 - price2num($remise_percent) / 100));
+		}
+		elseif ($column == 'marge_tx'){
+			$price = ((price2num($pa_ht) * (1 + price2num($value) / 100)) / (1 - price2num($remise_percent) / 100));
+		}
+		else ${$column} = price2num($value);
+
 		if(empty($line->fk_fournprice)) $line->fk_fournprice = 0;
-        $marginInfos = getMarginInfos($price, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->fk_fournprice, $pa_ht);
-        $line->marge_tx = $marginInfos[1];
-        $line->marque_tx = $marginInfos[2];
+		$marginInfos = getMarginInfos($price, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->fk_fournprice, $pa_ht);
+
+		$field = array('price','qty','remise_percent','pa_ht');
+		if ($column == 'marque_tx') {
+			$marque_tx = price2num($value);
+			$marge_tx = $marginInfos[1];
+		}
+		elseif ($column == 'marge_tx') {
+			$marge_tx = price2num($value);
+			$marque_tx = $marginInfos[2];
+		}elseif (in_array($column,$field)){
+			$marge_tx = $marginInfos[1];
+			$marque_tx = $marginInfos[2];
+		}
 
 		if ($objectelement == 'facture')
 		{
@@ -209,9 +228,9 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			'total_ht'=>price($total_ht)
 			,'multicurrency_total_ht'=>price($multicurrency_total_ht)
 			,'qty'=>$qty
-			,'pa_ht'=>price($pa_ht)
-			,'marge_tx'=>price($line->marge_tx,2).' %'
-			,'marque_tx'=>price($line->marque_tx,2).' %'
+			,'pa_ht'=>price($pa_ht, 2)
+			,'marge_tx'=>price($marge_tx,2).' %'
+			,'marque_tx'=>price($marque_tx,2).' %'
 			,'price'=>price($price)
 			,'situation_cycle_ref'=>$situation_cycle_ref
 			,'remise_percent'=>$remise_percent

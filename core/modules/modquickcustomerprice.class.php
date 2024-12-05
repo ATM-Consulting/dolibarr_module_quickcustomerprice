@@ -112,7 +112,7 @@ class modquickcustomerprice extends DolibarrModules
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->conflictwith = array();	// List of modules id this module is in conflict with
 		$this->phpmin = array(7,1);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(21,0);	// Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(16,0);	// Minimum version of Dolibarr required by module
 		$this->langfiles = array("quickcustomerprice@quickcustomerprice");
 
 		// Constants

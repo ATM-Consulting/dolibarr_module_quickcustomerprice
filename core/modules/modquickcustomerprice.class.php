@@ -59,7 +59,7 @@ class modquickcustomerprice extends DolibarrModules
 		$this->description = "Modify a value of your product or service with one click";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-		$this->version = '3.8.1';
+		$this->version = '3.8.2';
 
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';

@@ -23,25 +23,25 @@
 
 namespace quickcustomerprice;
 
-if(file_exists(DOL_DOCUMENT_ROOT.'/core/class/commonhookactions.class.php')) {
-	require_once DOL_DOCUMENT_ROOT.'/core/class/commonhookactions.class.php';
-	/**
-	 *    Parent class of all other hook actions classes
-	 */
-	abstract class RetroCompatCommonHookActions extends \CommonHookActions {
+if (file_exists(DOL_DOCUMENT_ROOT . '/core/class/commonhookactions.class.php')) {
+	require_once DOL_DOCUMENT_ROOT . '/core/class/commonhookactions.class.php';
 
-	}
-}
-else {
 	/**
 	 *    Parent class of all other hook actions classes
 	 */
-	abstract class RetroCompatCommonHookActions {
+	abstract class RetroCompatCommonHookActions extends \CommonHookActions
+	{
+	}
+} else {
+	/**
+	 *    Parent class of all other hook actions classes
+	 */
+	abstract class RetroCompatCommonHookActions
+	{
 		/**
 		 * @var string    String of results.
 		 */
 		public $resprints;
-
 		/**
 		 * @var array    Array of results.
 		 */

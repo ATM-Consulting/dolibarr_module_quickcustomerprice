@@ -3,11 +3,10 @@
  * Script créant et vérifiant que les champs requis s'ajoutent bien
  */
 
-if(!defined('INC_FROM_DOLIBARR')) {
+if (! defined('INC_FROM_DOLIBARR')) {
 	define('INC_FROM_CRON_SCRIPT', true);
 
 	require('../config.php');
-
 }
 
 

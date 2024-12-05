@@ -5,7 +5,8 @@
 
 
 ## Release 3.8
-- NEW (SP128): T5087 - Allow on-the-fly editing of margin rates and mark rates on quote, order and invoice lines - **13/11/2024** - 3.8.0
+- FIX (130) : Retrocompatibilité V16 - **05/12/2024** - 3.8.1
+- NEW (SP128) : T5087 - Allow on-the-fly editing of margin rates and mark rates on quote, order and invoice lines - **13/11/2024** - 3.8.0
 
 ## Release 3.7
 - FIX : Compat v20 - **22/07/2024** - 3.7.0

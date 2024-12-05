@@ -178,9 +178,14 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                             $strToFind[] = 'td.linecolqty';
                         }
                         if($user->hasRight('quickcustomerprice', 'edit_discount')) $strToFind[] = 'td.linecoldiscount';
-                        if(isModEnabled('margin')) $strToFind[] = 'td.linecolmargin1';
-						if(isModEnabled('margin')) $strToFind[] = 'td.linecolmargin2';
-						if(isModEnabled('margin')) $strToFind[] = 'td.linecolmark1';
+                        if(isModEnabled('margin')) {
+							$strToFind[] = 'td.linecolmargin1';
+							if (floatval(DOL_VERSION) >= 21.0) {
+								$strToFind[] = 'td.linecolmargin2';
+								$strToFind[] = 'td.linecolmark1';
+							}
+						}
+
 						if(isModEnabled('multicurrency')) $strToFind[] = 'td.linecoluht_currency';
                     ?>
 			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {
@@ -198,18 +203,22 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 							col='qty';
 						} else if ($(item).hasClass('linecolmargin1')) {
 							col = 'pa_ht';
-						} else if ($(item).hasClass('linecolmargin2')) {
-							col = 'marge_tx';
-						}else if ($(item).hasClass('linecolmark1')) {
-							col = 'marque_tx';
 						} else if ($(item).hasClass('linecolcycleref')) {
 							col = 'situation_cycle_ref';
 						} else if ($(item).hasClass('linecoluht_currency')) {
 							col = 'pu_ht_devise';
+						} else if (<?php echo floatval(DOL_VERSION)?> >= 21.0) {
+							if ($(item).hasClass('linecolmargin2')) {
+								col = 'marge_tx';
+							} else if ($(item).hasClass('linecolmark1')) {
+								col = 'marque_tx';
+							}
 						}
 						else {
 							col = 'price';
 						}
+
+
 
 			  			$a = $('<a class="blue" style="text-decoration:underline;cursor:text;" />');
 			  			$a.attr('href', "javascript:;");
@@ -279,11 +288,17 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 										$('tr[id=row-'+lineid+'] td.linecoluht_currency a').attr('value',data.pu_ht_devise);
 										$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
 										$('tr[id=row-'+lineid+'] td.linecolmargin1 a').html(data.pa_ht);
-										$('tr[id=row-'+lineid+'] td.linecolmargin1 a').attr('value',data.pa_ht);
-										$('tr[id=row-'+lineid+'] td.linecolmargin2 a').html(data.marge_tx);
-										$('tr[id=row-'+lineid+'] td.linecolmargin2 a').attr('value',data.marge_tx);
-										$('tr[id=row-'+lineid+'] td.linecolmark1 a').html(data.marque_tx);
-										$('tr[id=row-'+lineid+'] td.linecolmark1 a').attr('value',data.marque_tx);
+
+										if (<?php echo floatval(DOL_VERSION)?> >= 21.0) {
+											$('tr[id=row-'+lineid+'] td.linecolmargin1 a').attr('value',data.pa_ht);
+											$('tr[id=row-'+lineid+'] td.linecolmargin2 a').html(data.marge_tx);
+											$('tr[id=row-'+lineid+'] td.linecolmargin2 a').attr('value',data.marge_tx);
+											$('tr[id=row-'+lineid+'] td.linecolmark1 a').html(data.marque_tx);
+											$('tr[id=row-'+lineid+'] td.linecolmark1 a').attr('value',data.marque_tx);
+										} else {
+											$('tr[id=row-'+lineid+'] td.linecolmargin2:first').html(data.marge_tx);
+											$('tr[id=row-'+lineid+'] td.linecolmargin2:eq(1)').html(data.marque_tx);
+										}
 										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
 										$('tr[id=row-'+lineid+'] td.linecoluht a').attr('value',data.price);
 										$('tr[id=row-'+lineid+'] td.linecolcycleref a').html(data.situation_cycle_ref+'%');

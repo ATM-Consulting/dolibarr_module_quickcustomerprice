@@ -77,29 +77,36 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 
 
         if($column == 'remise_percent') ${$column} = price2num(floatval($value));
-        elseif ($column == 'marque_tx'){
+        elseif ($column == 'marque_tx' && floatval(DOL_VERSION) >= 21.0){
 			$price = ((price2num($pa_ht) / (1 - price2num($value) / 100)) / (1 - price2num($remise_percent) / 100));
 		}
-		elseif ($column == 'marge_tx'){
+		elseif ($column == 'marge_tx' && floatval(DOL_VERSION) >= 21.0){
 			$price = ((price2num($pa_ht) * (1 + price2num($value) / 100)) / (1 - price2num($remise_percent) / 100));
 		}
 		else ${$column} = price2num($value);
 
 		if(empty($line->fk_fournprice)) $line->fk_fournprice = 0;
-		$marginInfos = getMarginInfos($price, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->fk_fournprice, $pa_ht);
+		if (floatval(DOL_VERSION) >= 21.0) {
+			$marginInfos = getMarginInfos($price, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->fk_fournprice, $pa_ht);
 
-		$field = array('price','qty','remise_percent','pa_ht');
-		if ($column == 'marque_tx') {
-			$marque_tx = price2num($value);
-			$marge_tx = $marginInfos[1];
+			$field = array('price','qty','remise_percent','pa_ht');
+			if ($column == 'marque_tx') {
+				$marque_tx = price2num($value);
+				$marge_tx = $marginInfos[1];
+			}
+			elseif ($column == 'marge_tx') {
+				$marge_tx = price2num($value);
+				$marque_tx = $marginInfos[2];
+			}elseif (in_array($column,$field)){
+				$marge_tx = $marginInfos[1];
+				$marque_tx = $marginInfos[2];
+			}
+		} else {
+			$marginInfos = getMarginInfos($price, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->fk_fournprice, $pa_ht);
+			$line->marge_tx = $marge_tx = $marginInfos[1];
+			$line->marque_tx = $marque_tx = $marginInfos[2];
 		}
-		elseif ($column == 'marge_tx') {
-			$marge_tx = price2num($value);
-			$marque_tx = $marginInfos[2];
-		}elseif (in_array($column,$field)){
-			$marge_tx = $marginInfos[1];
-			$marque_tx = $marginInfos[2];
-		}
+
 
 		if ($objectelement == 'facture')
 		{

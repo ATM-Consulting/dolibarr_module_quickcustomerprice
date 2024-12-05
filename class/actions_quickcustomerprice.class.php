@@ -178,11 +178,14 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                             $strToFind[] = 'td.linecolqty';
                         }
                         if($user->hasRight('quickcustomerprice', 'edit_discount')) $strToFind[] = 'td.linecoldiscount';
-                        if(isModEnabled('margin')) $strToFind[] = 'td.linecolmargin1';
-						if (floatval(DOL_VERSION) >= 21.0) {
-							if(isModEnabled('margin')) $strToFind[] = 'td.linecolmargin2';
-							if(isModEnabled('margin')) $strToFind[] = 'td.linecolmark1';
+                        if(isModEnabled('margin')) {
+							$strToFind[] = 'td.linecolmargin1';
+							if (floatval(DOL_VERSION) >= 21.0) {
+								$strToFind[] = 'td.linecolmargin2';
+								$strToFind[] = 'td.linecolmark1';
+							}
 						}
+
 						if(isModEnabled('multicurrency')) $strToFind[] = 'td.linecoluht_currency';
                     ?>
 			  		$('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>'+',td.linecolcycleref').each(function(i,item) {

@@ -2,39 +2,49 @@
 
 ## Unreleased
 
-
-
 ## Release 3.8
+
+- FIX : Compat V21 - *05/12/2024* - 3.8.1
 - FIX (130) : Retrocompatibilité V16 - **05/12/2024** - 3.8.1
-- NEW (SP128) : T5087 - Allow on-the-fly editing of margin rates and mark rates on quote, order and invoice lines - **13/11/2024** - 3.8.0
+- NEW (SP128) : T5087 - Allow on-the-fly editing of margin rates and mark rates on quote, order and invoice lines - *
+  *13/11/2024** - 3.8.0
 
 ## Release 3.7
+
 - FIX : Compat v20 - **22/07/2024** - 3.7.0
   Changed Dolibarr compatibility range to 16 min - 20 max
   Changed PHP compatibility range to 7.1 min
 
 ## Release 3.6
+
 - FIX : warning - **29/02/2024** - 3.6.1
 - FIX : compat v19 - **21/11/2023** - 3.6.0
 
 ## Release 3.5
+
 - NEW : Add hook to delete pen for some extrafields - **19/09/2023** - 3.5.0
-- NEW : Allow on-the-fly editing of net P.U (currency) on quote, order and invoice lines (customer and supplier sides) - **11/03/2023** - 3.4.0
+- NEW : Allow on-the-fly editing of net P.U (currency) on quote, order and invoice lines (customer and supplier sides) -
+  **11/03/2023** - 3.4.0
 - NEW : Add spanish translation - **07/03/2023** - 3.3.0
 
 ## Release 3.2
+
 - FIX : DA023886 - pen for edition doesn't work - **18/09/2023** - 3.2.8
 - FIX : DA023507 - Handle multiple class on element - **16/06/2023** - 3.2.7
 - FIX : Update interface.php for bad value selection on link extrafields - **03/05/2023** - 3.2.6
 - FIX : Compat V17 : gestion des extrafields - **15/12/2022** - 3.2.5
-- FIX : Extrafields updates : `interface.php` has sql errors (invisible to user) due to number parsing - **05/10/2022** - 3.2.4
+- FIX : Extrafields updates : `interface.php` has sql errors (invisible to user) due to number parsing - **05/10/2022
+  ** - 3.2.4
 - FIX : interpolation de variable dans l'ajax supprimé et mise à jour impossible - **12/09/2022** - 3.2.3
 - FIX : Icon - **09/08/2022** - 3.2.2
-- FIX : Retrait de certaines conditions sur des variables indéfinies, warning dans la log - Compat php8 - **12/07/2022** - 3.2.1
+- FIX : Retrait de certaines conditions sur des variables indéfinies, warning dans la log - Compat php8 - **12/07/2022
+  ** - 3.2.1
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" **10/05/2022** 3.2.0
 
 ## Release 3.1
-- FIX: When you modify a supplier invoice line value the description of the modified line is erased. - **30/07/2022** - 3.1.7
+
+- FIX: When you modify a supplier invoice line value the description of the modified line is erased. - **30/07/2022** -
+  3.1.7
 - FIX: change family name - **02/06/2022** - 3.1.6
 - FIX: Compatibility V16 : newToken - **02/06/2022** - 3.1.5
 - FIX: save for wrong line - **2022-03-29** - 3.1.4

@@ -1,4 +1,4 @@
 <?php
 
-	require('config.default.php');
+require('config.default.php');
 

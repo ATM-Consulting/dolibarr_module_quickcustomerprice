@@ -17,15 +17,15 @@
  */
 
 /**
- * 	\file		admin/about.php
- * 	\ingroup	quickcustomerprice
- * 	\brief		This file is an example about page
- * 				Put some comments here
+ *    \file        admin/about.php
+ *    \ingroup    quickcustomerprice
+ *    \brief        This file is an example about page
+ *                Put some comments here
  */
 // Dolibarr environment
 $res = @include("../../main.inc.php"); // From htdocs directory
 if (! $res) {
-    $res = @include("../../../main.inc.php"); // From "custom" directory
+	$res = @include("../../../main.inc.php"); // From "custom" directory
 }
 
 // Libraries
@@ -37,7 +37,7 @@ $langs->load("quickcustomerprice@quickcustomerprice");
 
 // Access control
 if (! $user->admin) {
-    accessforbidden();
+	accessforbidden();
 }
 
 /*
@@ -48,17 +48,17 @@ llxHeader('', $langs->trans($page_name));
 
 // Subheader
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
-    . $langs->trans("BackToModuleList") . '</a>';
+	. $langs->trans("BackToModuleList") . '</a>';
 print_fiche_titre($langs->trans($page_name), $linkback);
 
 // Configuration header
 $head = quickcustomerpriceAdminPrepareHead();
 dol_fiche_head(
-    $head,
-    'about',
-    $langs->trans("Module104874Name"),
-    0,
-    'quickcustomerprice@quickcustomerprice'
+	$head,
+	'about',
+	$langs->trans("Module104874Name"),
+	0,
+	'quickcustomerprice@quickcustomerprice'
 );
 
 // About page goes here

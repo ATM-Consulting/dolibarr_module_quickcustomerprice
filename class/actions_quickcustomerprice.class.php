@@ -273,8 +273,16 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 										$('tr[id=row-'+lineid+'] td.linecoluht_currency a').attr('value',data.pu_ht_devise);
 										$('tr[id=row-'+lineid+'] td.linecolqty a').html(data.qty);
 										$('tr[id=row-'+lineid+'] td.linecolmargin1 a').html(data.pa_ht);
-										$('tr[id=row-'+lineid+'] td.linecolmargin2:first').html(data.marge_tx);
-										$('tr[id=row-'+lineid+'] td.linecolmargin2:eq(1)').html(data.marque_tx);
+										// DA025943: solution sale en attendant une refonte
+										const marginOpts = <?= json_encode([
+											getDolGlobalInt('DISPLAY_MARGIN_RATES') ? 'marge_tx' : 0,
+											getDolGlobalInt('DISPLAY_MARK_RATES') ? 'marque_tx' : 0])
+											?>.filter(opt => opt);
+										for (let index = 0; index < marginOpts.length; index++) {
+											const marginOpt = marginOpts[index];
+											$(`tr[id=row-${lineid}] td.linecolmargin2:eq(${index})`).html(pricejs(parseFloat(data[marginOpt].replace(',', '.'))) + '%');
+										}
+
 										$('tr[id=row-'+lineid+'] td.linecoluht a').html(data.price);
 										$('tr[id=row-'+lineid+'] td.linecoluht a').attr('value',data.price);
 										$('tr[id=row-'+lineid+'] td.linecolcycleref a').html(data.situation_cycle_ref+'%');

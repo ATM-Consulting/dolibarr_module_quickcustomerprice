@@ -221,6 +221,11 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                                     }
                                     , dataType: 'json'
                                 }).done(function (data) {
+									// DA025943: solution sale en attendant une refonte
+									const marginOpts = <?= json_encode([
+										getDolGlobalInt('DISPLAY_MARGIN_RATES') ? 'marge_tx' : 0,
+										getDolGlobalInt('DISPLAY_MARK_RATES') ? 'marque_tx' : 0])
+										?>.filter(opt => opt);
                                     if (data.error == null) {
                                         $('tr[id=row-' + lineid + '] td.linecolht').html(data.total_ht);
                                         $('tr[id=row-' + lineid + '] td.linecolutotalht_currency').html(data.multicurrency_total_ht);
@@ -240,6 +245,10 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                                         }
                                     else
                                         {
+											for (let index = 0; index < marginOpts.length; index++) {
+												const marginOpt = marginOpts[index];
+												$(`tr[id=row-${lineid}] td.linecolmargin2:eq(${index})`).html(pricejs(parseFloat(data[marginOpt].replace(',', '.'))) + '%');
+											}
                                             $('tr[id=row-' + lineid + '] td.linecolmargin2:first').html(data.marge_tx);
                                             $('tr[id=row-' + lineid + '] td.linecolmargin2:eq(1)').html(data.marque_tx);
                                         }

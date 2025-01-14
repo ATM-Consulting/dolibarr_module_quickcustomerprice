@@ -6,11 +6,12 @@
 
 - FIX : Compat V21 - *05/12/2024* - 3.8.1
 - FIX (130) : Retrocompatibilité V16 - **05/12/2024** - 3.8.1
-- NEW (SP128) : T5087 - Allow on-the-fly editing of margin rates and mark rates on quote, order and invoice lines - *
-  *13/11/2024** - 3.8.0
+- NEW (SP128) : T5087 - Allow on-the-fly editing of margin rates and mark rates on quote, order and invoice lines - **13/11/2024** - 3.8.0
 
 ## Release 3.7
 
+- FIX : Prendre en compte options d'affichage des colonnes marge / marque - 
+  **09/01/2025** - 3.7.1
 - FIX : Compat v20 - **22/07/2024** - 3.7.0
   Changed Dolibarr compatibility range to 16 min - 20 max
   Changed PHP compatibility range to 7.1 min

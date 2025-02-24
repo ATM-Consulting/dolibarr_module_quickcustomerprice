@@ -4,6 +4,7 @@
 
 ## Release 3.8
 
+- FIX : Add into showinputfields object id to query sql - *24/02/2025* - 3.8.2
 - FIX : Compat V21 - *05/12/2024* - 3.8.1
 - FIX (130) : Retrocompatibilité V16 - **05/12/2024** - 3.8.1
 - NEW (SP128) : T5087 - Allow on-the-fly editing of margin rates and mark rates on quote, order and invoice lines - *

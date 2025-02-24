@@ -318,7 +318,7 @@ function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 	$fk_object = 0;
 	if ($objectelement == "order_supplier") $fk_object = $line->fk_commande;
 	if ($objectelement == "invoice_supplier") $fk_object = $line->fk_facture_fourn;
-	if ($objectelement == "supplier_proposal") $fk_object = $line->fk_supplier_proposa;
+	if ($objectelement == "supplier_proposal") $fk_object = $line->fk_supplier_proposal;
 	if ($objectelement == "facture") $fk_object = $line->fk_facture;
 	if ($objectelement == "commande") $fk_object = $line->fk_commande;
 	if ($objectelement == "propal") $fk_object = $line->fk_propal;

@@ -302,6 +302,7 @@ function checkPriceMin(CommonObjectLine $line, float $price): int {
 
 function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 	global $db;
+
 	if ($objectelement == "order_supplier") $lineclass = "CommandeFournisseurLigne";
 	if ($objectelement == "invoice_supplier") $lineclass = "SupplierInvoiceLine";
 	if ($objectelement == "supplier_proposal") $lineclass = "SupplierProposalLine";
@@ -313,8 +314,17 @@ function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 	$line = new $lineclass($db);
 	$line->fetch($lineid);
 	$line->fetch_optionals();
+
+	$fk_object = 0;
+	if ($objectelement == "order_supplier") $fk_object = $line->fk_commande;
+	if ($objectelement == "invoice_supplier") $fk_object = $line->fk_facture_fourn;
+	if ($objectelement == "supplier_proposal") $fk_object = $line->fk_supplier_proposal;
+	if ($objectelement == "facture") $fk_object = $line->fk_facture;
+	if ($objectelement == "commande") $fk_object = $line->fk_commande;
+	if ($objectelement == "propal") $fk_object = $line->fk_propal;
+
 	$extrafields->fetch_name_optionals_label($line->element);
-	if (floatval(DOL_VERSION) >= 17) $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_' . $code_extrafield] ?? null, '', '', '', '', 0, $line->element);
+	if (floatval(DOL_VERSION) >= 17) $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_' . $code_extrafield] ?? null, '', '', '', '', $fk_object, $line->element);
 	else $showInputField = $extrafields->showInputField($code_extrafield, $line->array_options['options_' . $code_extrafield]);
 
 	if (floatval(DOL_VERSION) >= 17) $type = $extrafields->attributes[$line->element]['type'][$code_extrafield];

@@ -4,6 +4,7 @@
 
 
 ## 3.2
+- FIX : TK2502-3612 Allowed to set negative amount on credit note invoice - *2024-03-05* - 3.2.9
 - FIX : DA023886 - pen for edition doesn't work - *18/09/2023* - 3.2.8
 - FIX : DA023507 - Handle multiple class on element - *16/06/2023* - 3.2.7
 - FIX : Update interface.php for bad value selection on link extrafields - *03/05/2023* - 3.2.6

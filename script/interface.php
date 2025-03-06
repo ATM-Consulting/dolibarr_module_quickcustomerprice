@@ -128,7 +128,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 						$price_min &&
 						(price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min))
 					)
-					&& $type && $type != 2
+					&& $type && $type != Facture::TYPE_CREDIT_NOTE
 				)
 				{
 					$langs->load('products');

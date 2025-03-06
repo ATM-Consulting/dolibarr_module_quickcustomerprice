@@ -102,8 +102,29 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 		}
 
 		if ($objectelement == 'facture') {
+			$sql = "SELECT type FROM ".$db->prefix()."facture as f";
+			$sql .= " JOIN ".$db->prefix()."facturedet as det";
+			$sql .= " ON det.fk_facture = f.rowid";
+			$sql .= " WHERE det.rowid = " . $line->id;
+
+			$resql = $db->query($sql);
+			if ($resql) {
+				if ($db->num_rows($resql)) {
+					$obj = $db->fetch_object($resql);
+					$type = $obj->type;
+				} else {
+					$o->error = __METHOD__ . '::num_rows Error : ' . $db->num_rows($resql);
+					dol_syslog(__METHOD__ . '::num_rows Error : ' . $db->num_rows($resql), LOG_ERR);
+					$error ++;
+				}
+			} else {
+				$o->error = __METHOD__ . '::query SQL Error : ' . $db->lasterror();
+				dol_syslog(__METHOD__ . '::query SQL Error : ' . $db->lasterror(), LOG_ERR);
+				$error ++;
+			}
+
 			//TODO Refacto
-			if (! empty($line->fk_product)) {
+			if (! empty($line->fk_product) && isset($type) && $type != Facture::TYPE_CREDIT_NOTE) {
 				$error = checkPriceMin($line, $price);
 			}
 			if (empty($error)) {

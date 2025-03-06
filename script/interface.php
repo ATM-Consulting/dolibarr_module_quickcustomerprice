@@ -124,7 +124,7 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			}
 
 			//TODO Refacto
-			if (! empty($line->fk_product) && $type && $type != Facture::TYPE_CREDIT_NOTE) {
+			if (! empty($line->fk_product) && isset($type) && $type != Facture::TYPE_CREDIT_NOTE) {
 				$error = checkPriceMin($line, $price);
 			}
 			if (empty($error)) {

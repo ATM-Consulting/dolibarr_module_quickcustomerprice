@@ -88,9 +88,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 			{
 				$product = new Product($db);
 				$res = $product->fetch($line->fk_product);
-
-				$type = $product->type;
-
+				
 				$price_min = $product->price_min;
 				if (!empty($conf->global->PRODUIT_MULTIPRICES) && !empty($o->thirdparty->price_level))
 					$price_min = $product->multiprices_min [$o->thirdparty->price_level];
@@ -106,7 +104,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 				if ($resql) {
 					if ($db->num_rows($resql)) {
 						$obj = $db->fetch_object($resql);
-						$type = $obj->type;
+						$invoiceType = $obj->type;
 					} else {
 						$o->error = __METHOD__ . '::num_rows Error : ' . $db->num_rows($resql);
 						dol_syslog(__METHOD__ . '::num_rows Error : ' . $db->num_rows($resql), LOG_ERR);
@@ -128,7 +126,7 @@ function _updateObjectLine($objectid, $objectelement,$lineid,$column, $value) {
 						$price_min &&
 						(price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min))
 					)
-					&& $type && $type != Facture::TYPE_CREDIT_NOTE
+					&& isset($invoiceType) && $invoiceType != Facture::TYPE_CREDIT_NOTE
 				)
 				{
 					$langs->load('products');

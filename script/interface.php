@@ -168,7 +168,7 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 
 			handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
-			$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', 0, 0, 0, 0, 0, 0, '', 0, 0, '', '', $pu_ht_devise);
+			$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', 0, 0, 0, 0, 0, 0, '', 0, 0, $line->ref_fourn, $line->fk_unit, '', $pu_ht_devise);
 			$line = new SupplierProposalLine($db);
 			$line->fetch($lineid);
 

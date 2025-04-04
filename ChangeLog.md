@@ -3,7 +3,7 @@
 ## Unreleased
 
 ## Release 3.8
-
+- FIX : Add supplier ref for supplier propasal - *04/04/2025* - 3.8.3
 - FIX : Add into showinputfields object id to query sql - *24/02/2025* - 3.8.2
 - FIX : Compat V21 - *05/12/2024* - 3.8.1
 - FIX (130) : Retrocompatibilité V16 - **05/12/2024** - 3.8.1

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ## Release 3.8
+- FIX : DA026769 - Formatting data before updateLine to respect std behavior - *31/07/2025* 3.8.4
 - FIX : Add supplier ref for supplier propasal - *04/04/2025* - 3.8.3
 - FIX : Add into showinputfields object id to query sql - *24/02/2025* - 3.8.2
 - FIX : Compat V21 - *05/12/2024* - 3.8.1

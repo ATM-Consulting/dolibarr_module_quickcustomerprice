@@ -147,7 +147,12 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			if (empty($error)) {
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
-				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits
+				$txtva_display = number_format((float) $line->tva_tx, 2, '.', '');
+				if (!empty($line->vat_src_code)) {
+					$txtva_display .= ' (' . $line->vat_src_code . ')';
+				}
+
+				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $txtva_display, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits
 					, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
 					, $line->array_options, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;

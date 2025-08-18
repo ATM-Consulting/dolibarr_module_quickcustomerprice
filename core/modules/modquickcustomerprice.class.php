@@ -59,7 +59,7 @@ class modquickcustomerprice extends DolibarrModules
 		$this->description = "Modify a value of your product or service with one click";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-		$this->version = '3.8.4';
+		$this->version = '3.8.5';
 
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
@@ -220,7 +220,9 @@ class modquickcustomerprice extends DolibarrModules
 	function init($options = '') {
 		$sql = array();
 
-		define('INC_FROM_DOLIBARR', true);
+		if (!defined('INC_FROM_DOLIBARR')) {
+			define('INC_FROM_DOLIBARR', true);
+		}
 
 		dol_include_once('/quickcustomerprice/config.php');
 		dol_include_once('/quickcustomerprice/script/create-maj-base.php');

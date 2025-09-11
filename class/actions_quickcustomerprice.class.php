@@ -122,8 +122,13 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 						}
 					}
 					if (isModEnabled('multicurrency')) $strToFind[] = 'td.linecoluht_currency';
+                    if(getDolGlobalInt('INVOICE_USE_SITUATION') == 2) {
+                        $strToFind[] = 'td.linecolcycleref + td';
+                    } else {
+                        $strToFind[] = 'td.linecolcycleref';
+                    }
 					?>
-                    $('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>' + ',td.linecolcycleref').each(function (i, item) {
+                    $('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>').each(function (i, item) {
                         value = $(item).html();
                         if (value == '&nbsp;') value = '';
 
@@ -137,9 +142,17 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                             col = 'qty';
                         } else if ($(item).hasClass('linecolmargin1')) {
                             col = 'pa_ht';
-                        } else if ($(item).hasClass('linecolcycleref')) {
+                        }
+                        <?php if(getDolGlobalInt('INVOICE_USE_SITUATION') == 2) { ?>
+                        else if ($(item).prev('td').hasClass('linecolcycleref')) {
                             col = 'situation_cycle_ref';
-                        } else if ($(item).hasClass('linecoluht_currency')) {
+                        }
+                        <?php } else { ?>
+                        else if ($(item).hasClass('linecolcycleref')) {
+                            col = 'situation_cycle_ref';
+                        }
+                        <?php } ?>
+                        else if ($(item).hasClass('linecoluht_currency')) {
                             col = 'pu_ht_devise';
                         } else if (<?php echo floatval(DOL_VERSION)?> >=
                         21.0 && $(item).hasClass('linecolmargin2')
@@ -254,7 +267,11 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                                         }
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').html(data.price);
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').attr('value', data.price);
-                                        $('tr[id=row-' + lineid + '] td.linecolcycleref a').html(data.situation_cycle_ref + '%');
+                                        if (<?php echo getDolGlobalInt('INVOICE_USE_SITUATION')?> == 2) {
+                                            $('tr[id=row-' + lineid + '] td.linecolcycleref').next('td').find('a').html(data.situation_cycle_ref + '%');
+                                        } else {
+                                            $('tr[id=row-' + lineid + '] td.linecolcycleref a').html(data.situation_cycle_ref + '%');
+                                        }
                                         $('tr[id=row-' + lineid + '] td.linecoluttc').html(data.uttc);
                                         $link.attr('value', data[col]);
 

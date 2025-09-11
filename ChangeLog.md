@@ -3,6 +3,7 @@
 ## Unreleased
 
 ## Release 3.8
+- FIX : DA027049 - Correct incompatibility with INVOICE_USE_SITUATION == 2 - *18/08/2025* - 3.8.5
 - FIX : Warning Constant INC_FROM_DOLIBARR already defined - *18/08/2025* - 3.8.5
 - FIX : DA026769 - Formatting data before updateLine to respect std behavior - *31/07/2025* 3.8.4
 - FIX : Add supplier ref for supplier propasal - *04/04/2025* - 3.8.3

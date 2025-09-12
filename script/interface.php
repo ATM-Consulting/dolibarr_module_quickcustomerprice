@@ -53,7 +53,7 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 	$o->fetch($objectid);
 
 	if (getDolGlobalString('QCP_ALLOW_CHANGE_ON_VALIDATE')) {
-		$o->statut = $objectelement::STATUS_DRAFT;
+		$o->status = $objectelement::STATUS_DRAFT;
 	}
 
 	$find = false;

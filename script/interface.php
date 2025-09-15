@@ -141,10 +141,11 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
 		} else if ($objectelement == 'commande') {
-			if (! empty($line->fk_product)) {
-				$error = checkPriceMin($line, $price);
+			if (!empty($line->fk_product)) {
+				$error = checkPriceMin($o, $line, $price);
+				$res = $error;
 			}
-			if (empty($error)) {
+			if ($error > 0) {
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 				$txtva_display = number_format((float) $line->tva_tx, 2, '.', '');
@@ -302,28 +303,57 @@ function handleMulticurrencyPrices(CommonObject $o, CommonObjectLine $line, ?flo
 }
 
 /**
+ * @param CommonObject $o
  * @param CommonObjectLine $line
  * @param float $price
  * @return int return > 0 if error
  */
-function checkPriceMin(CommonObjectLine $line, float $price): int {
+function checkPriceMin(CommonObject $o, CommonObjectLine $line, float $price): int {
 	global $langs, $db, $user, $conf;
 
 	$error = 0;
+
+	$res = $o->fetch_thirdparty();
 
 	$product = new Product($db);
 	$product->fetch($line->fk_product);
 
 	$price_min = $product->price_min;
-	if (getDolGlobalString('PRODUIT_MULTIPRICES') && ! empty($o->thirdparty->price_level)) $price_min = $product->multiprices_min [$o->thirdparty->price_level];
+	if ($res) {
+		if (getDolGlobalString('PRODUIT_MULTIPRICES') && !empty($o->thirdparty->price_level) ) {
+			$price_min = $product->multiprices_min[$o->thirdparty->price_level];
+		}
+	} else {
+		$o->error = 'Error to fetch thirdparty';
+		$error++;
+	}
+	// Extract parameters from the request and convert them to the correct type
+	$discountPercent = price2num(floatval(GETPOST('remise_percent')));
+	$unitPrice = price2num($price);
+	$minPrice = price2num($price_min);
 
-	if (((getDolGlobalString('MAIN_USE_ADVANCED_PERMS') && ! $user->hasRight('produit', 'ignore_price_min_advance')) || ! getDolGlobalString('MAIN_USE_ADVANCED_PERMS')) && ($price_min && (price2num($price) * (1 - price2num(floatval(GETPOST('remise_percent'))) / 100) < price2num($price_min)))) {
+	// Calculate the final price after applying the discount
+	$finalPriceAfterDiscount = $unitPrice * (1 - ($discountPercent / 100));
+
+	// Check if the advanced permissions module is enabled
+	$advancedPermsEnabled = getDolGlobalString('MAIN_USE_ADVANCED_PERMS');
+	// Check if the user has the specific right to ignore the minimum price rule
+	$userCanIgnorePriceMin = $advancedPermsEnabled && $user->hasRight('produit', 'ignore_price_min_advance');
+
+	// Check if a minimum price is defined and if the final price is below it
+	$minPriceIsSet = !empty($minPrice);
+	$priceIsTooLow = $finalPriceAfterDiscount < $minPrice;
+
+	if (!$userCanIgnorePriceMin && $minPriceIsSet && $priceIsTooLow) {
 		$langs->load('products');
-		$o->error = $langs->trans('CantBeLessThanMinPrice', price(price2num($price_min, 'MU'), 0, $langs, 0, 0, -1, $conf->currency));
+		$o->error = $langs->trans('CantBeLessThanMinPrice', price($minPrice, 0, $langs, 0, 0, -1, $conf->currency));
 		$error++;
 	}
 
-	return $error;
+	if ($error > 0 ) {
+		return -1;
+	}
+	return 1;
 }
 
 function _showExtrafield($objectelement, $lineid, $code_extrafield) {

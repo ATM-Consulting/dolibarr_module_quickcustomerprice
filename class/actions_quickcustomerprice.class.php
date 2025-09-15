@@ -474,7 +474,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 			<?php
 		}
 
-		if (! $error) {
+		if (!$error) {
 			return 0; // or return 1 to replace standard code
 		} else {
 			return -1;

@@ -44,6 +44,8 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 	global $db, $conf, $langs, $user, $hookmanager;
 	$error = 0;
 
+	$res = 1;
+
 	$Tab = array();
 	if ($objectelement == "order_supplier") $objectelement = "CommandeFournisseur";
 	if ($objectelement == "invoice_supplier") $objectelement = "FactureFournisseur";
@@ -125,9 +127,10 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 
 			//TODO Refacto
 			if (! empty($line->fk_product) && isset($type) && $type != Facture::TYPE_CREDIT_NOTE) {
-				$error = checkPriceMin($line, $price);
+				$error = checkPriceMin($line, $price, $o);
+				$res = $error;
 			}
-			if (empty($error)) {
+			if ($error > 0) {
 				if ($remise_percent === 'Offert') $remise_percent = 100;
 				if (strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
 
@@ -142,7 +145,7 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			}
 		} else if ($objectelement == 'commande') {
 			if (!empty($line->fk_product)) {
-				$error = checkPriceMin($o, $line, $price);
+				$error = checkPriceMin($line, $price, $o);
 				$res = $error;
 			}
 			if ($error > 0) {
@@ -161,10 +164,11 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
 		} else if ($objectelement == "propal") { // Propal
-			if (! empty($line->fk_product)) {
-				$error = checkPriceMin($line, $price);
+			if (!empty($line->fk_product)) {
+				$error = checkPriceMin($line, $price, $o);
+				$res = $error;
 			}
-			if (empty($error)) {
+			if ($error > 0) {
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 				$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code
@@ -229,9 +233,23 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			$o->generateDocument($o->modelpdf, $outputlangs, $hidedetails, $hidedesc, $hideref);
 		}
 
+
 		if ($res >= 0) {
 			if (empty($line->marge_tx)) $line->marge_tx = 0;
 			if (empty($line->marque_tx)) $line->marque_tx = 0;
+			$total_ht = $total_ht ?? 0;
+			$multicurrency_total_ht = $multicurrency_total_ht ?? 0;
+			$qty = $qty ?? 0;
+			$pa_ht = $pa_ht ?? 0.0;
+			$marge_tx = $marge_tx ?? 0.0;
+			$marque_tx = $marque_tx ?? 0.0;
+			$price = $price ?? 0;
+			$situation_cycle_ref = $situation_cycle_ref ?? ''; // Chaîne de caractères vide par défaut
+			$remise_percent = $remise_percent ?? 0;
+			$uttc = $uttc ?? 0;
+			$pu_ht_devise = $pu_ht_devise ?? 0;
+
+
 			$Tab = array(
 				'total_ht' => price($total_ht)
 			, 'multicurrency_total_ht' => price($multicurrency_total_ht)
@@ -303,30 +321,32 @@ function handleMulticurrencyPrices(CommonObject $o, CommonObjectLine $line, ?flo
 }
 
 /**
- * @param CommonObject $o
  * @param CommonObjectLine $line
  * @param float $price
+ * @param CommonObject $o
  * @return int return > 0 if error
  */
-function checkPriceMin(CommonObject $o, CommonObjectLine $line, float $price): int {
+function checkPriceMin(CommonObjectLine $line, float $price, CommonObject $o = null): int {
 	global $langs, $db, $user, $conf;
 
 	$error = 0;
-
-	$res = $o->fetch_thirdparty();
-
 	$product = new Product($db);
 	$product->fetch($line->fk_product);
 
 	$price_min = $product->price_min;
-	if ($res) {
-		if (getDolGlobalString('PRODUIT_MULTIPRICES') && !empty($o->thirdparty->price_level) ) {
-			$price_min = $product->multiprices_min[$o->thirdparty->price_level];
+
+	if ($o != null) {
+		$res = $o->fetch_thirdparty();
+		if ($res) {
+			if (getDolGlobalString('PRODUIT_MULTIPRICES') && !empty($o->thirdparty->price_level) ) {
+				$price_min = $product->multiprices_min[$o->thirdparty->price_level];
+			}
+		} else {
+			$o->error = 'Error to fetch thirdparty';
+			$error++;
 		}
-	} else {
-		$o->error = 'Error to fetch thirdparty';
-		$error++;
 	}
+
 	// Extract parameters from the request and convert them to the correct type
 	$discountPercent = price2num(floatval(GETPOST('remise_percent')));
 	$unitPrice = price2num($price);
@@ -346,7 +366,9 @@ function checkPriceMin(CommonObject $o, CommonObjectLine $line, float $price): i
 
 	if (!$userCanIgnorePriceMin && $minPriceIsSet && $priceIsTooLow) {
 		$langs->load('products');
-		$o->error = $langs->trans('CantBeLessThanMinPrice', price($minPrice, 0, $langs, 0, 0, -1, $conf->currency));
+		if ($o != null) {
+			$o->error = $langs->trans('CantBeLessThanMinPrice', price($minPrice, 0, $langs, 0, 0, -1, $conf->currency));
+		}
 		$error++;
 	}
 

@@ -123,13 +123,14 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 					}
 					if (isModEnabled('multicurrency')) $strToFind[] = 'td.linecoluht_currency';
                     if(getDolGlobalInt('INVOICE_USE_SITUATION') == 2) {
-                        $strToFind[] = 'td.linecolcycleref + td';
-                    } else {
                         $strToFind[] = 'td.linecolcycleref';
                     }
 					?>
                     $('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>').each(function (i, item) {
                         value = $(item).html();
+						className = $(item).className;
+
+                        if (value == '&nbsp;') value = '';
                         if (value == '&nbsp;') value = '';
 
                         lineid = $(item).closest('tr').attr('id').substr(4);
@@ -144,7 +145,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                             col = 'pa_ht';
                         }
                         <?php if(getDolGlobalInt('INVOICE_USE_SITUATION') == 2) { ?>
-                        else if ($(item).prev('td').hasClass('linecolcycleref')) {
+                        else if ($(item).hasClass('linecolcycleref')) {
                             col = 'situation_cycle_ref';
                         }
                         <?php } else { ?>
@@ -268,7 +269,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').html(data.price);
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').attr('value', data.price);
                                         if (<?php echo getDolGlobalInt('INVOICE_USE_SITUATION')?> == 2) {
-                                            $('tr[id=row-' + lineid + '] td.linecolcycleref').next('td').find('a').html(data.situation_cycle_ref + '%');
+                                            $('tr[id=row-' + lineid + '] td.linecolcycleref').find('a').html(data.situation_cycle_ref + '%');
                                         } else {
                                             $('tr[id=row-' + lineid + '] td.linecolcycleref a').html(data.situation_cycle_ref + '%');
                                         }

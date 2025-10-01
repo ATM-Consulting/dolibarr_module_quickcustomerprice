@@ -43,6 +43,7 @@ switch ($get) {
 function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) {
 	global $db, $conf, $langs, $user, $hookmanager;
 	$error = 0;
+	$res = 1;
 
 	$Tab = array();
 	if ($objectelement == "order_supplier") $objectelement = "CommandeFournisseur";
@@ -131,11 +132,14 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 				if ($remise_percent === 'Offert') $remise_percent = 100;
 				if (strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
 
+				// we need all the previous progress to calculate the new progress (actual progress - cumulate progress)
+				$actualProgress = $situation_cycle_ref - $line->getAllPrevProgress($objectid, $include_credit_note = true);
+
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx
 					, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
-					, $line->array_options, $situation_cycle_ref, $line->fk_unit, $pu_ht_devise);
+					, $line->array_options, $actualProgress, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;
 				$multicurrency_total_ht = $o->line->multicurrency_total_ht;
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
@@ -231,6 +235,19 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 		if ($res >= 0) {
 			if (empty($line->marge_tx)) $line->marge_tx = 0;
 			if (empty($line->marque_tx)) $line->marque_tx = 0;
+			$total_ht = $total_ht ?? 0;
+			$multicurrency_total_ht = $multicurrency_total_ht ?? 0;
+			$qty = $qty ?? 0;
+			$pa_ht = $pa_ht ?? 0.0;
+			$marge_tx = $marge_tx ?? 0.0;
+			$marque_tx = $marque_tx ?? 0.0;
+			$price = $price ?? 0;
+			$situation_cycle_ref = $situation_cycle_ref ?? ''; // Chaîne de caractères vide par défaut
+			$remise_percent = $remise_percent ?? 0;
+			$uttc = $uttc ?? 0;
+			$pu_ht_devise = $pu_ht_devise ?? 0;
+
+
 			$Tab = array(
 				'total_ht' => price($total_ht)
 			, 'multicurrency_total_ht' => price($multicurrency_total_ht)
@@ -318,9 +335,16 @@ function checkPriceMin(CommonObject $o, CommonObjectLine $line, float $price): i
 	$product->fetch($line->fk_product);
 
 	$price_min = $product->price_min;
-	if ($res) {
-		if (getDolGlobalString('PRODUIT_MULTIPRICES') && !empty($o->thirdparty->price_level) ) {
-			$price_min = $product->multiprices_min[$o->thirdparty->price_level];
+
+	if ($o != null) {
+		$res = $o->fetch_thirdparty();
+		if ($res) {
+			if (getDolGlobalString('PRODUIT_MULTIPRICES') && !empty($o->thirdparty->price_level) ) {
+				$price_min = $product->multiprices_min[$o->thirdparty->price_level];
+			}
+		} else {
+			$o->error = 'Error to fetch thirdparty';
+			$error++;
 		}
 	} else {
 		$o->error = 'Error to fetch thirdparty';
@@ -345,7 +369,9 @@ function checkPriceMin(CommonObject $o, CommonObjectLine $line, float $price): i
 
 	if (!$userCanIgnorePriceMin && $minPriceIsSet && $priceIsTooLow) {
 		$langs->load('products');
-		$o->error = $langs->trans('CantBeLessThanMinPrice', price($minPrice, 0, $langs, 0, 0, -1, $conf->currency));
+		if ($o != null) {
+			$o->error = $langs->trans('CantBeLessThanMinPrice', price($minPrice, 0, $langs, 0, 0, -1, $conf->currency));
+		}
 		$error++;
 	}
 

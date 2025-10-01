@@ -123,8 +123,6 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 					}
 					if (isModEnabled('multicurrency')) $strToFind[] = 'td.linecoluht_currency';
                     if(getDolGlobalInt('INVOICE_USE_SITUATION') == 2) {
-                        $strToFind[] = 'td.linecolcycleref + td';
-                    } else {
                         $strToFind[] = 'td.linecolcycleref';
                     }
 					?>
@@ -144,7 +142,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                             col = 'pa_ht';
                         }
                         <?php if(getDolGlobalInt('INVOICE_USE_SITUATION') == 2) { ?>
-                        else if ($(item).prev('td').hasClass('linecolcycleref')) {
+                        else if ($(item).hasClass('linecolcycleref')) {
                             col = 'situation_cycle_ref';
                         }
                         <?php } else { ?>
@@ -268,7 +266,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').html(data.price);
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').attr('value', data.price);
                                         if (<?php echo getDolGlobalInt('INVOICE_USE_SITUATION')?> == 2) {
-                                            $('tr[id=row-' + lineid + '] td.linecolcycleref').next('td').find('a').html(data.situation_cycle_ref + '%');
+                                            $('tr[id=row-' + lineid + '] td.linecolcycleref').find('a').html(data.situation_cycle_ref + '%');
                                         } else {
                                             $('tr[id=row-' + lineid + '] td.linecolcycleref a').html(data.situation_cycle_ref + '%');
                                         }
@@ -284,6 +282,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                                         priceCallbacks.forEach((callback) => {
                                             callback(lineid, data);
                                         });
+										location.reload();
                                     } else if (data.error == 'updateFailed') {
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').html(data.msg);
                                     }

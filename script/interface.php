@@ -43,7 +43,6 @@ switch ($get) {
 function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) {
 	global $db, $conf, $langs, $user, $hookmanager;
 	$error = 0;
-
 	$res = 1;
 
 	$Tab = array();
@@ -134,11 +133,14 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 				if ($remise_percent === 'Offert') $remise_percent = 100;
 				if (strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
 
+				// we need all the previous progress to calculate the new progress (actual progress - cumulate progress)
+				$actualProgress = $situation_cycle_ref - $line->getAllPrevProgress($objectid, $include_credit_note = true);
+
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx
 					, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
-					, $line->array_options, $situation_cycle_ref, $line->fk_unit, $pu_ht_devise);
+					, $line->array_options, $actualProgress, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;
 				$multicurrency_total_ht = $o->line->multicurrency_total_ht;
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;

@@ -128,9 +128,6 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 					?>
                     $('table#tablelines tr[id]').find('<?php echo implode(',', $strToFind); ?>').each(function (i, item) {
                         value = $(item).html();
-						className = $(item).className;
-
-                        if (value == '&nbsp;') value = '';
                         if (value == '&nbsp;') value = '';
 
                         lineid = $(item).closest('tr').attr('id').substr(4);
@@ -285,6 +282,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                                         priceCallbacks.forEach((callback) => {
                                             callback(lineid, data);
                                         });
+										location.reload();
                                     } else if (data.error == 'updateFailed') {
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').html(data.msg);
                                     }

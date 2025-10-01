@@ -127,7 +127,6 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			//TODO Refacto
 			if (! empty($line->fk_product) && isset($type) && $type != Facture::TYPE_CREDIT_NOTE) {
 				$error = checkPriceMin($line, $price, $o);
-				$res = $error;
 			}
 			if ($error > 0) {
 				if ($remise_percent === 'Offert') $remise_percent = 100;
@@ -148,7 +147,6 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 		} else if ($objectelement == 'commande') {
 			if (!empty($line->fk_product)) {
 				$error = checkPriceMin($line, $price, $o);
-				$res = $error;
 			}
 			if ($error > 0) {
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
@@ -168,7 +166,6 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 		} else if ($objectelement == "propal") { // Propal
 			if (!empty($line->fk_product)) {
 				$error = checkPriceMin($line, $price, $o);
-				$res = $error;
 			}
 			if ($error > 0) {
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
@@ -373,11 +370,7 @@ function checkPriceMin(CommonObjectLine $line, float $price, CommonObject $o = n
 		}
 		$error++;
 	}
-
-	if ($error > 0 ) {
-		return -1;
-	}
-	return 1;
+	return $error;
 }
 
 function _showExtrafield($objectelement, $lineid, $code_extrafield) {

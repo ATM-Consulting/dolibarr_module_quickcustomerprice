@@ -4,6 +4,7 @@
 
 ## Release 3.8
 - FIX : Calculate progress on invoice situation - *1/10/2025* - 3.8.7
+- FIX : undefined arguments checkPriceMin() on updateObjectLine() propal/commande *30/09/2025* - 3.8.7
 - FIX : DA026983 - Fix property statut deprecated in property status - *12/09/2025* - 3.8.6
   + Fixed error handling when entering a price lower than the minimum price
 - FIX : DA027049 - Correct incompatibility with INVOICE_USE_SITUATION == 2 - *18/08/2025* - 3.8.5

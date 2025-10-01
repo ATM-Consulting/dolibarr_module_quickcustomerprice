@@ -128,7 +128,7 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			if (! empty($line->fk_product) && isset($type) && $type != Facture::TYPE_CREDIT_NOTE) {
 				$error = checkPriceMin($line, $price, $o);
 			}
-			if ($error > 0) {
+			if (empty($error)) {
 				if ($remise_percent === 'Offert') $remise_percent = 100;
 				if (strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
 
@@ -148,7 +148,7 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			if (!empty($line->fk_product)) {
 				$error = checkPriceMin($line, $price, $o);
 			}
-			if ($error > 0) {
+			if (empty($error)) {
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 				$txtva_display = number_format((float) $line->tva_tx, 2, '.', '');
@@ -167,7 +167,7 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			if (!empty($line->fk_product)) {
 				$error = checkPriceMin($line, $price, $o);
 			}
-			if ($error > 0) {
+			if (empty($error)) {
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 				$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code

@@ -3,6 +3,7 @@
 ## Unreleased
 
 ## Release 3.8
+- FIX : Compat V22 - *02/10/2025* - 3.8.9
 - FIX : Calculate progress on invoice situation - *1/10/2025* - 3.8.8
 - FIX : undefined arguments checkPriceMin() on updateObjectLine() propal/commande *30/09/2025* - 3.8.7
 - FIX : DA026983 - Fix property statut deprecated in property status - *12/09/2025* - 3.8.6

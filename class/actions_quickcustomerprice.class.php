@@ -260,7 +260,7 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
 												const marginOpt = marginOpts[index];
 												$(`tr[id=row-${lineid}] td.linecolmargin2:eq(${index})`).html(pricejs(parseFloat(data[marginOpt].replace(',', '.'))) + '%');
 											}
-                                            $('tr[id=row-' + lineid + '] td.linecolmargin2:first').html(data.marge_tx);
+                                            $('tr[id=row-' + lineid + '] td.linecolmargin2:first').html(data.marque_tx);
                                             $('tr[id=row-' + lineid + '] td.linecolmargin2:eq(1)').html(data.marque_tx);
                                         }
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').html(data.price);
@@ -282,7 +282,6 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                                         priceCallbacks.forEach((callback) => {
                                             callback(lineid, data);
                                         });
-										location.reload();
                                     } else if (data.error == 'updateFailed') {
                                         $('tr[id=row-' + lineid + '] td.linecoluht a').html(data.msg);
                                     }

@@ -37,7 +37,8 @@ class modquickcustomerprice extends DolibarrModules
 	 *
 	 * @param DoliDB $db Database handler
 	 */
-	function __construct($db) {
+	public function __construct($db)
+	{
 		global $langs, $conf;
 
 		$this->db = $db;
@@ -65,7 +66,7 @@ class modquickcustomerprice extends DolibarrModules
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \quickcustomerprice\TechATM::getLastModuleVersionUrl($this);
 
-// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
+		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
 		$this->special = 0;
@@ -121,8 +122,8 @@ class modquickcustomerprice extends DolibarrModules
 		$this->const = array();
 
 		// Array to add new pages in new tabs
-		// Example: $this->tabs = array('objecttype:+tabname1:Title1:mylangfile@quickcustomerprice:$user->rights->quickcustomerprice->read:/quickcustomerprice/mynewtab1.php?id=__ID__',  	// To add a new tab identified by code tabname1
-		//                              'objecttype:+tabname2:Title2:mylangfile@quickcustomerprice:$user->rights->othermodule->read:/quickcustomerprice/mynewtab2.php?id=__ID__',  	// To add another new tab identified by code tabname2
+		// Example: $this->tabs = array('objecttype:+tabname1:Title1:mylangfile@quickcustomerprice:$user->hasRight('quickcustomerprice', 'read'):/quickcustomerprice/mynewtab1.php?id=__ID__',  	// To add a new tab identified by code tabname1
+		//                              'objecttype:+tabname2:Title2:mylangfile@quickcustomerprice:$user->hasRight('othermodule', 'read'):/quickcustomerprice/mynewtab2.php?id=__ID__',  	// To add another new tab identified by code tabname2
 		//                              'objecttype:-tabname:NU:conditiontoremove');                                                     						// To remove an existing tab identified by code tabname
 		// where objecttype can be
 		// 'categories_x'	  to add a tab in category view (replace 'x' by type of category (0=product, 1=supplier, 2=customer, 3=member)
@@ -217,7 +218,8 @@ class modquickcustomerprice extends DolibarrModules
 	 * @param string $options Options when enabling module ('', 'noboxes')
 	 * @return     int                1 if OK, 0 if KO
 	 */
-	function init($options = '') {
+	public function init($options = '')
+	{
 		$sql = array();
 
 		if (!defined('INC_FROM_DOLIBARR')) {
@@ -240,7 +242,8 @@ class modquickcustomerprice extends DolibarrModules
 	 * @param string $options Options when enabling module ('', 'noboxes')
 	 * @return     int                1 if OK, 0 if KO
 	 */
-	function remove($options = '') {
+	public function remove($options = '')
+	{
 		$sql = array();
 
 		return $this->_remove($sql, $options);

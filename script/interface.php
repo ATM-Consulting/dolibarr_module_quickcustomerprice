@@ -133,7 +133,7 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 				if (strpos($situation_cycle_ref, '%') !== false) $situation_cycle_ref = substr($situation_cycle_ref, 0, -1); // Do not keep the '%'
 
 				// we need all the previous progress to calculate the new progress (actual progress - cumulate progress)
-				$actualProgress = $situation_cycle_ref - $line->getAllPrevProgress($objectid, $include_credit_note = true);
+				$actualProgress = $situation_cycle_ref - ((floatval(DOL_VERSION) >= 21) ? $line->getAllPrevProgress($objectid, true) : $line->get_prev_progress($objectid, true));
 
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 

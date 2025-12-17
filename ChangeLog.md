@@ -3,7 +3,7 @@
 ## Unreleased
 
 ## Release 3.8
-- FIX : T6251 - Fix edit extrafields on invoice lines - *17/12/2025* - 3.8.11
+- FIX : T6251 - Fix edit extrafields on proposal lines - *17/12/2025* - 3.8.11
 - FIX: DA027130 - Fix margin rate on price update and remove location.reload() to prevent duplicate line additions. - *13/10/2025* - 3.8.10
 - FIX : Compat V22 - *02/10/2025* - 3.8.9
 - FIX : Calculate progress on invoice situation - *1/10/2025* - 3.8.8

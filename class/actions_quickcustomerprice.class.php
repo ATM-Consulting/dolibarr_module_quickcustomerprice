@@ -382,6 +382,8 @@ class Actionsquickcustomerprice extends quickcustomerprice\RetroCompatCommonHook
                         if (type == 'varchar'
                             || type == 'int'
                             || type == 'price'
+                            || type == 'double'
+                            || type == 'float'
                             || type == 'phone'
                             || type == 'mail'
                             || type == 'phone'

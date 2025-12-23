@@ -1,8 +1,23 @@
 <?php
+/* Copyright (C) 2025 ATM Consulting
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 if (! defined("NOCSRFCHECK")) define('NOCSRFCHECK', 1);
 if (! defined("NOTOKENRENEWAL")) define('NOTOKENRENEWAL', 1);
 
-require('../config.php');
+require '../config.php';
 dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/compta/facture/class/facture.class.php');
 dol_include_once('/commande/class/commande.class.php');
@@ -40,7 +55,18 @@ switch ($get) {
 		break;
 }
 
-function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) {
+/**
+ * Update a line of an object (order, invoice, proposal, supplier docs).
+ *
+ * @param int    $objectid      ID of the parent object
+ * @param string $objectelement Type of object element (commande, facture, propal, etc.)
+ * @param int    $lineid        ID of the line to update
+ * @param string $column        Column/field to update
+ * @param mixed  $value         New value for the given column
+ * @return array                Array with updated values or error information
+ */
+function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value)
+{
 	global $db, $conf, $langs, $user, $hookmanager;
 	$error = 0;
 	$res = 1;
@@ -137,14 +163,14 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
-				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx
-					, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
-					, $line->array_options, $actualProgress, $line->fk_unit, $pu_ht_devise);
+				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx,
+					 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code,
+					 $line->array_options, $actualProgress, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;
 				$multicurrency_total_ht = $o->line->multicurrency_total_ht;
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
-		} else if ($objectelement == 'commande') {
+		} elseif ($objectelement == 'commande') {
 			if (!empty($line->fk_product)) {
 				$error = checkPriceMin($o, $line, $price);
 			}
@@ -156,27 +182,27 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 					$txtva_display .= ' (' . $line->vat_src_code . ')';
 				}
 
-				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $txtva_display, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits
-					, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code
-					, $line->array_options, $line->fk_unit, $pu_ht_devise);
+				$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $txtva_display, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits,
+					 $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->special_code,
+					 $line->array_options, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;
 				$multicurrency_total_ht = $o->line->multicurrency_total_ht;
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
-		} else if ($objectelement == "propal") { // Propal
+		} elseif ($objectelement == "propal") { // Propal
 			if (! empty($line->fk_product)) {
 				$error = checkPriceMin($o, $line, $price);
 			}
 			if (empty($error)) {
 				handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
-				$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code
-					, $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise);
+				$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code,
+					 $line->fk_parent_line, 0, $line->fk_fournprice, $pa_ht, $line->label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise);
 				$total_ht = $o->line->total_ht;
 				$multicurrency_total_ht = $o->line->multicurrency_total_ht;
 				$uttc = $o->line->subprice + ($o->line->subprice * $o->line->tva_tx) / 100;
 			}
-		} else if ($objectelement == "CommandeFournisseur") {
+		} elseif ($objectelement == "CommandeFournisseur") {
 			handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 			$res = $o->updateline($lineid, $line->desc, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, 0, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit, $pu_ht_devise, $line->ref_supplier);
@@ -195,7 +221,6 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 			$multicurrency_total_ht = $line->multicurrency_total_ht;
 			$uttc = $line->subprice + ($line->subprice * $line->tva_tx) / 100;
 		} elseif ($objectelement == "SupplierProposal") {
-
 			handleMulticurrencyPrices($o, $line, $price, $pu_ht_devise);
 
 			$res = $o->updateline($lineid, $price, $qty, $remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', 0, 0, 0, 0, 0, 0, '', 0, 0, $line->ref_fourn, $line->fk_unit, $pu_ht_devise);
@@ -303,28 +328,34 @@ function _updateObjectLine($objectid, $objectelement, $lineid, $column, $value) 
 }
 
 /**
- * @param CommonObject $o
- * @param CommonObjectLine $line
- * @param float|null $price
- * @param float|null $pu_ht_devise
+ * Handle synchronization between price and multicurrency unit price on a line.
+ *
+ * @param CommonObject     $o            Parent object (invoice, order, proposal, etc.)
+ * @param CommonObjectLine $line         Line object concerned by the modification
+ * @param float|null       $price        Unit price in main currency (passed by reference)
+ * @param float|null       $pu_ht_devise Unit price in foreign currency (passed by reference)
  * @return void
  */
-function handleMulticurrencyPrices(CommonObject $o, CommonObjectLine $line, ?float &$price, ?float &$pu_ht_devise): void {
+function handleMulticurrencyPrices(CommonObject $o, CommonObjectLine $line, ?float &$price, ?float &$pu_ht_devise): void
+{
 	if (is_null($pu_ht_devise)) $pu_ht_devise = 0;
 	if (! isset($line->pu_ht_devise)) $line->pu_ht_devise = 0;
 	if (is_null($price)) $price = 0;
 	if (price($price) != price($line->subprice)) $pu_ht_devise = $price * $o->multicurrency_tx;
-	else if (price($pu_ht_devise) != price($line->pu_ht_devise)) $price = $pu_ht_devise / $o->multicurrency_tx;
+	elseif (price($pu_ht_devise) != price($line->pu_ht_devise)) $price = $pu_ht_devise / $o->multicurrency_tx;
 	else $pu_ht_devise = $line->multicurrency_subprice;
 }
 
 /**
- * @param CommonObject $o
- * @param CommonObjectLine $line
- * @param float $price
- * @return int return > 0 if error
+ * Check that unit price is not lower than the product minimum price.
+ *
+ * @param CommonObject     $o    Parent object (invoice, order, proposal, etc.)
+ * @param CommonObjectLine $line Line being checked
+ * @param float            $price Unit price to validate against minimum price
+ * @return int                  > 0 if error (price lower than allowed minimum)
  */
-function checkPriceMin(CommonObject $o, CommonObjectLine $line, float $price): int {
+function checkPriceMin(CommonObject $o, CommonObjectLine $line, float $price): int
+{
 	global $langs, $db, $user, $conf;
 
 	$error = 0;
@@ -378,7 +409,16 @@ function checkPriceMin(CommonObject $o, CommonObjectLine $line, float $price): i
 	return $error;
 }
 
-function _showExtrafield($objectelement, $lineid, $code_extrafield) {
+/**
+ * Render the HTML input for an extrafield on a given line.
+ *
+ * @param string $objectelement   Element type of the parent object (facture, commande, propal, etc.)
+ * @param int    $lineid          ID of the line containing the extrafield
+ * @param string $code_extrafield Code of the extrafield to display
+ * @return string                 HTML of the input field with quick save icon
+ */
+function _showExtrafield($objectelement, $lineid, $code_extrafield)
+{
 	global $db;
 
 	if ($objectelement == "order_supplier") $lineclass = "CommandeFournisseurLigne";
@@ -412,7 +452,18 @@ function _showExtrafield($objectelement, $lineid, $code_extrafield) {
 		. '&nbsp;&nbsp;<span class="quickSaveExtra" style="cursor:pointer;" type="' . $type . '" extracode="' . $code_extrafield . '" lineid="' . $lineid . '" lineclass="' . $lineclass . '"><i class="fa fa-check" aria-hidden="true"></i></span>';
 }
 
-function _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value) {
+/**
+ * Save an extrafield value on a given line and return its HTML output.
+ *
+ * @param int    $lineid          ID of the line to update
+ * @param string $lineclass       Class name of the line object (OrderLine, FactureLigne, etc.)
+ * @param string $type            Type of the extrafield
+ * @param string $code_extrafield Code of the extrafield
+ * @param mixed  $value           Value to save for the extrafield
+ * @return string                 HTML representation of the saved value
+ */
+function _saveExtrafield($lineid, $lineclass, $type, $code_extrafield, $value)
+{
 	global $db, $user;
 	$line = new $lineclass($db);
 	$line->fetch($lineid);
